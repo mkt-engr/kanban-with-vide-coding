@@ -1,8 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx shadcn:*)"
+      "Bash(npx shadcn:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run lint)",
+      "Bash(docker-compose up:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
   }
 }
