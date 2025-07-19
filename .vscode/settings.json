@@ -1,0 +1,9 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+  "files.associations": {
+    "*.spec.ts": "typescript",
+    "*.spec.tsx": "typescriptreact"
+  }
+}

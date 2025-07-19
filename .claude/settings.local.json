@@ -18,7 +18,13 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(pnpm type-check:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)",
+      "Bash(pnpm install:*)"
     ],
     "deny": [
       "Bash(rm -rf *)"
