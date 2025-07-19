@@ -76,6 +76,14 @@ npx prisma studio
 - ESLint is configured with Next.js rules
 - Tailwind CSS is configured for the project
 
+## テスト
+
+- テストはVitestを利用すること
+- テストファイルはテストの対象となるファイルの隣に置いて
+  - たとえば`actions/board.ts`なら`actions/board.spec.ts`にする
+- コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
+- カスタムフックのテストをしたい場合はコンポーネントのテストで書いて。
+
 ## Database Connection
 
 The application expects a `DATABASE_URL` environment variable for PostgreSQL connection. For local development, use the provided Docker Compose setup with these default credentials:

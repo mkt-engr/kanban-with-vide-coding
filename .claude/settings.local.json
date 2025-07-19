@@ -7,7 +7,14 @@
       "Bash(npm run lint)",
       "Bash(docker-compose up:*)",
       "Bash(npx prisma generate:*)",
-      "Bash(npx prisma migrate:*)"
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npx vitest:*)",
+      "Bash(mv:*)",
+      "Bash(pnpm test:*)",
+      "Bash(git add:*)"
     ],
     "deny": [
       "Bash(rm -rf *)"
