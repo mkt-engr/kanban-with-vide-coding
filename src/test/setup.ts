@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 // Suppress console warnings in tests
 const originalError = console.error
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Warning: Missing `Description`') ||

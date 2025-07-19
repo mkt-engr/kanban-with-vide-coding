@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CreateBoardDialog } from './create-board-dialog'
 import { createBoard } from '@/app/actions/board'
@@ -9,7 +9,7 @@ vi.mock('@/app/actions/board', () => ({
   createBoard: vi.fn(),
 }))
 
-const mockCreateBoard = createBoard as any
+const mockCreateBoard = createBoard as ReturnType<typeof vi.fn>
 
 describe('CreateBoardDialog', () => {
   beforeEach(() => {

@@ -83,6 +83,7 @@ npx prisma studio
   - たとえば`actions/board.ts`なら`actions/board.spec.ts`にする
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
 - カスタムフックのテストをしたい場合はコンポーネントのテストで書いて。
+- GitHub ActionsでテストのCIを実行したい。
 
 ## Database Connection
 

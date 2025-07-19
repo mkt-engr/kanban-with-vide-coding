@@ -4,8 +4,10 @@ import BoardPage from './page'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 
-const mockPrisma = prisma as any
-const mockNotFound = notFound as any
+const mockPrisma = prisma as typeof prisma & {
+  board: { findUnique: ReturnType<typeof vi.fn> }
+}
+const mockNotFound = notFound as ReturnType<typeof vi.fn>
 
 describe('BoardPage', () => {
   const mockBoard = {
@@ -67,7 +69,7 @@ describe('BoardPage', () => {
   it('should render board information correctly', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     // Board title and description
@@ -78,7 +80,7 @@ describe('BoardPage', () => {
   it('should render all columns with correct task counts', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     // Column titles
@@ -95,7 +97,7 @@ describe('BoardPage', () => {
   it('should render tasks with correct information', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     // Tasks in To Do column
@@ -121,7 +123,7 @@ describe('BoardPage', () => {
     }
     mockPrisma.board.findUnique.mockResolvedValue(boardWithoutDescription)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     expect(screen.getByText('テストボード')).toBeInTheDocument()
@@ -143,7 +145,7 @@ describe('BoardPage', () => {
     }
     mockPrisma.board.findUnique.mockResolvedValue(boardWithEmptyColumns)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     expect(screen.getByText('Empty Column')).toBeInTheDocument()
@@ -153,7 +155,7 @@ describe('BoardPage', () => {
   it('should call notFound when board does not exist', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(null)
 
-    await expect(BoardPage({ params: { boardId: 'nonexistent' } })).rejects.toThrow('NEXT_NOT_FOUND')
+    await expect(BoardPage({ params: Promise.resolve({ boardId: 'nonexistent' }) })).rejects.toThrow('NEXT_NOT_FOUND')
 
     expect(mockNotFound).toHaveBeenCalled()
   })
@@ -162,7 +164,7 @@ describe('BoardPage', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockPrisma.board.findUnique.mockRejectedValue(new Error('Database error'))
 
-    await expect(BoardPage({ params: { boardId: 'board-1' } })).rejects.toThrow('NEXT_NOT_FOUND')
+    await expect(BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })).rejects.toThrow('NEXT_NOT_FOUND')
 
     expect(mockNotFound).toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch board:', expect.any(Error))
@@ -193,7 +195,7 @@ describe('BoardPage', () => {
     }
     mockPrisma.board.findUnique.mockResolvedValue(boardWithMinimalTask)
 
-    const component = await BoardPage({ params: { boardId: 'board-1' } })
+    const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
     render(component)
 
     expect(screen.getByText('Minimal Task')).toBeInTheDocument()
@@ -205,7 +207,7 @@ describe('BoardPage', () => {
   it('should call prisma with correct parameters', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
-    await BoardPage({ params: { boardId: 'test-board-id' } })
+    await BoardPage({ params: Promise.resolve({ boardId: 'test-board-id' }) })
 
     expect(mockPrisma.board.findUnique).toHaveBeenCalledWith({
       where: { id: 'test-board-id' },

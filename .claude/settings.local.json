@@ -14,7 +14,11 @@
       "Bash(npx vitest:*)",
       "Bash(mv:*)",
       "Bash(pnpm test:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm lint:*)"
     ],
     "deny": [
       "Bash(rm -rf *)"

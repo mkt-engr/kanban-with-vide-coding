@@ -27,9 +27,10 @@ async function getBoardWithColumns(boardId: string) {
 export default async function BoardPage({
   params,
 }: {
-  params: { boardId: string };
+  params: Promise<{ boardId: string }>;
 }) {
-  const board = await getBoardWithColumns(params.boardId);
+  const { boardId } = await params;
+  const board = await getBoardWithColumns(boardId);
 
   if (!board) {
     notFound();

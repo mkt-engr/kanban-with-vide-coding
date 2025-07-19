@@ -4,8 +4,11 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 
 // Mocks are automatically set up in setup.ts
-const mockPrisma = prisma as any
-const mockRedirect = redirect as any
+const mockPrisma = prisma as typeof prisma & {
+  board: { create: ReturnType<typeof vi.fn> }
+  column: { createMany: ReturnType<typeof vi.fn> }
+}
+const mockRedirect = redirect as ReturnType<typeof vi.fn>
 
 describe('createBoard Server Action', () => {
   beforeEach(() => {
