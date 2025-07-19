@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Features
+
+- **Kanban Board Management**: Create and manage kanban boards with default columns
+- **Modern Tech Stack**: Next.js 15, React 19, TypeScript, Prisma ORM
+- **Database**: PostgreSQL with Prisma migrations
+- **UI Components**: shadcn/ui with Tailwind CSS
+- **Testing**: Comprehensive test suite with Vitest and React Testing Library
+- **CI/CD**: GitHub Actions workflow for automated testing
+
 ## Getting Started
 
 First, run the development server:
