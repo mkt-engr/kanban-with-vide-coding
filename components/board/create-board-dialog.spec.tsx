@@ -16,7 +16,7 @@ describe("CreateBoardDialog", () => {
     vi.clearAllMocks();
   });
 
-  it("should open and close dialog correctly", async () => {
+  it('ダイアログが正しく開閉されること', async () => {
     const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
@@ -40,7 +40,7 @@ describe("CreateBoardDialog", () => {
     });
   });
 
-  it("should render form fields correctly", async () => {
+  it('フォームフィールドが正しく表示されること', async () => {
     const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
@@ -57,7 +57,7 @@ describe("CreateBoardDialog", () => {
     ).toBeInTheDocument();
   });
 
-  it("should handle form submission correctly", async () => {
+  it('フォーム送信が正しく処理されること', async () => {
     const user = userEvent.setup();
     mockCreateBoard.mockResolvedValue(undefined);
 
@@ -89,7 +89,7 @@ describe("CreateBoardDialog", () => {
     expect(formData.get("description")).toBe("テスト用の説明");
   });
 
-  it("should show disabled state during submission", async () => {
+  it('送信中に無効状態が表示されること', async () => {
     const user = userEvent.setup();
     // Mock server action to return immediately but still trigger loading state
     mockCreateBoard.mockResolvedValue(undefined);
@@ -119,7 +119,7 @@ describe("CreateBoardDialog", () => {
     });
   });
 
-  it("should require title field", async () => {
+  it('タイトルフィールドが必須であること', async () => {
     const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
@@ -136,7 +136,7 @@ describe("CreateBoardDialog", () => {
     expect(titleInput).toBeInvalid();
   });
 
-  it("should handle server action error", async () => {
+  it('サーバーアクションエラーを処理できること', async () => {
     const user = userEvent.setup();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockCreateBoard.mockRejectedValue(new Error("Server error"));
@@ -168,7 +168,7 @@ describe("CreateBoardDialog", () => {
     consoleSpy.mockRestore();
   });
 
-  it("should allow submission with only title", async () => {
+  it('タイトルのみでの送信ができること', async () => {
     const user = userEvent.setup();
     mockCreateBoard.mockResolvedValue(undefined);
 

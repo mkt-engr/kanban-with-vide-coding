@@ -66,7 +66,7 @@ describe('BoardPage', () => {
     vi.clearAllMocks()
   })
 
-  it('should render board information correctly', async () => {
+  it('ボード情報が正しく表示されること', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
     const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
@@ -77,7 +77,7 @@ describe('BoardPage', () => {
     expect(screen.getByText('テストの説明')).toBeInTheDocument()
   })
 
-  it('should render all columns with correct task counts', async () => {
+  it('全てのカラムが正しいタスク数で表示されること', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
     const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
@@ -94,7 +94,7 @@ describe('BoardPage', () => {
     expect(screen.getByText('(1)')).toBeInTheDocument() // Done column
   })
 
-  it('should render tasks with correct information', async () => {
+  it('タスクが正しい情報で表示されること', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
     const component = await BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })
@@ -116,7 +116,7 @@ describe('BoardPage', () => {
     expect(screen.getByText(new Date('2024-01-01').toLocaleDateString())).toBeInTheDocument()
   })
 
-  it('should handle board without description', async () => {
+  it('説明のないボードを処理できること', async () => {
     const boardWithoutDescription = {
       ...mockBoard,
       description: null,
@@ -130,7 +130,7 @@ describe('BoardPage', () => {
     expect(screen.queryByText('テストの説明')).not.toBeInTheDocument()
   })
 
-  it('should handle empty columns', async () => {
+  it('空のカラムを処理できること', async () => {
     const boardWithEmptyColumns = {
       ...mockBoard,
       columns: [
@@ -152,7 +152,7 @@ describe('BoardPage', () => {
     expect(screen.getByText('(0)')).toBeInTheDocument()
   })
 
-  it('should call notFound when board does not exist', async () => {
+  it('ボードが存在しない場合notFoundが呼ばれること', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(null)
 
     await expect(BoardPage({ params: Promise.resolve({ boardId: 'nonexistent' }) })).rejects.toThrow('NEXT_NOT_FOUND')
@@ -160,7 +160,7 @@ describe('BoardPage', () => {
     expect(mockNotFound).toHaveBeenCalled()
   })
 
-  it('should handle database error', async () => {
+  it('データベースエラーを処理できること', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockPrisma.board.findUnique.mockRejectedValue(new Error('Database error'))
 
@@ -172,7 +172,7 @@ describe('BoardPage', () => {
     consoleSpy.mockRestore()
   })
 
-  it('should render tasks without description or due date', async () => {
+  it('説明や期限のないタスクを表示できること', async () => {
     const boardWithMinimalTask = {
       ...mockBoard,
       columns: [
@@ -204,7 +204,7 @@ describe('BoardPage', () => {
     expect(screen.queryByText('null')).not.toBeInTheDocument()
   })
 
-  it('should call prisma with correct parameters', async () => {
+  it('正しいパラメータでprismaが呼ばれること', async () => {
     mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
 
     await BoardPage({ params: Promise.resolve({ boardId: 'test-board-id' }) })
