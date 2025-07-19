@@ -104,7 +104,7 @@ describe('BoardPage', () => {
     expect(screen.getByText('タスク1')).toBeInTheDocument()
     expect(screen.getByText('タスク1の説明')).toBeInTheDocument()
     expect(screen.getByText('high')).toBeInTheDocument()
-    expect(screen.getByText('2024/12/31')).toBeInTheDocument()
+    expect(screen.getByText(new Date('2024-12-31').toLocaleDateString())).toBeInTheDocument()
 
     expect(screen.getByText('タスク2')).toBeInTheDocument()
     expect(screen.getByText('medium')).toBeInTheDocument()
@@ -113,7 +113,7 @@ describe('BoardPage', () => {
     expect(screen.getByText('完了タスク')).toBeInTheDocument()
     expect(screen.getByText('完了したタスク')).toBeInTheDocument()
     expect(screen.getByText('low')).toBeInTheDocument()
-    expect(screen.getByText('2024/1/1')).toBeInTheDocument()
+    expect(screen.getByText(new Date('2024-01-01').toLocaleDateString())).toBeInTheDocument()
   })
 
   it('should handle board without description', async () => {
