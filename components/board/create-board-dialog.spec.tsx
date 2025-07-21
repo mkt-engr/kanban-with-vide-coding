@@ -17,7 +17,6 @@ describe("CreateBoardDialog", () => {
   });
 
   it('ダイアログが正しく開閉されること', async () => {
-    const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
     // Dialog should be closed initially
@@ -25,14 +24,14 @@ describe("CreateBoardDialog", () => {
 
     // Open dialog
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     // Dialog should be open
     expect(screen.getByText("新しいボードを作成")).toBeInTheDocument();
 
     // Close dialog with cancel button
     const cancelButton = screen.getByRole("button", { name: "キャンセル" });
-    await user.click(cancelButton);
+    await userEvent.click(cancelButton);
 
     // Dialog should be closed
     await waitFor(() => {
@@ -41,12 +40,11 @@ describe("CreateBoardDialog", () => {
   });
 
   it('フォームフィールドが正しく表示されること', async () => {
-    const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
     // Open dialog
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     // Check form fields
     expect(screen.getByLabelText("タイトル *")).toBeInTheDocument();
@@ -58,39 +56,37 @@ describe("CreateBoardDialog", () => {
   });
 
   it('フォーム送信が正しく処理されること', async () => {
-    const user = userEvent.setup();
     mockCreateBoard.mockResolvedValue(undefined);
 
     render(<CreateBoardDialog />);
 
     // Open dialog
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     // Fill form
     const titleInput = screen.getByLabelText("タイトル *");
     const descriptionTextarea = screen.getByLabelText("説明");
 
-    await user.type(titleInput, "テストボード");
-    await user.type(descriptionTextarea, "テスト用の説明");
+    await userEvent.type(titleInput, "テストボード");
+    await userEvent.type(descriptionTextarea, "テスト用の説明");
 
     // Submit form
     const submitButton = screen.getByRole("button", { name: "作成" });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
-    // Wait for server action to be called
+    // Wait for createBoard to be called and verify FormData
     await waitFor(() => {
       expect(mockCreateBoard).toHaveBeenCalledTimes(1);
+      
+      const formData = mockCreateBoard.mock.calls[0][0];
+      expect(formData).toBeInstanceOf(FormData);
+      expect(formData.get("title")).toBe("テストボード");
+      expect(formData.get("description")).toBe("テスト用の説明");
     });
-
-    // Check that FormData was passed correctly
-    const formData = mockCreateBoard.mock.calls[0][0];
-    expect(formData.get("title")).toBe("テストボード");
-    expect(formData.get("description")).toBe("テスト用の説明");
   });
 
   it('送信中に無効状態が表示されること', async () => {
-    const user = userEvent.setup();
     // Mock server action to return immediately but still trigger loading state
     mockCreateBoard.mockResolvedValue(undefined);
 
@@ -98,10 +94,10 @@ describe("CreateBoardDialog", () => {
 
     // Open dialog and fill form
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     const titleInput = screen.getByLabelText("タイトル *");
-    await user.type(titleInput, "テストボード");
+    await userEvent.type(titleInput, "テストボード");
 
     // The form should be enabled initially
     expect(titleInput).not.toBeDisabled();
@@ -111,7 +107,7 @@ describe("CreateBoardDialog", () => {
 
     // Submit form
     const submitButton = screen.getByRole("button", { name: "作成" });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     // Verify the server action was called
     await waitFor(() => {
@@ -120,16 +116,15 @@ describe("CreateBoardDialog", () => {
   });
 
   it('タイトルフィールドが必須であること', async () => {
-    const user = userEvent.setup();
     render(<CreateBoardDialog />);
 
     // Open dialog
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     // Try to submit without title
     const submitButton = screen.getByRole("button", { name: "作成" });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     // Check that title input is invalid
     const titleInput = screen.getByLabelText("タイトル *");
@@ -137,7 +132,6 @@ describe("CreateBoardDialog", () => {
   });
 
   it('サーバーアクションエラーを処理できること', async () => {
-    const user = userEvent.setup();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockCreateBoard.mockRejectedValue(new Error("Server error"));
 
@@ -145,13 +139,13 @@ describe("CreateBoardDialog", () => {
 
     // Open dialog and submit form
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     const titleInput = screen.getByLabelText("タイトル *");
-    await user.type(titleInput, "テストボード");
+    await userEvent.type(titleInput, "テストボード");
 
     const submitButton = screen.getByRole("button", { name: "作成" });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     // Wait for error to be logged
     await waitFor(() => {
@@ -169,29 +163,29 @@ describe("CreateBoardDialog", () => {
   });
 
   it('タイトルのみでの送信ができること', async () => {
-    const user = userEvent.setup();
     mockCreateBoard.mockResolvedValue(undefined);
 
     render(<CreateBoardDialog />);
 
     // Open dialog
     const openButton = screen.getByRole("button", { name: "新規ボード作成" });
-    await user.click(openButton);
+    await userEvent.click(openButton);
 
     // Fill only title
     const titleInput = screen.getByLabelText("タイトル *");
-    await user.type(titleInput, "タイトルのみ");
+    await userEvent.type(titleInput, "タイトルのみ");
 
     // Submit form
     const submitButton = screen.getByRole("button", { name: "作成" });
-    await user.click(submitButton);
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
       expect(mockCreateBoard).toHaveBeenCalledTimes(1);
+      
+      const formData = mockCreateBoard.mock.calls[0][0];
+      expect(formData).toBeInstanceOf(FormData);
+      expect(formData.get("title")).toBe("タイトルのみ");
+      expect(formData.get("description")).toBe("");
     });
-
-    const formData = mockCreateBoard.mock.calls[0][0];
-    expect(formData.get("title")).toBe("タイトルのみ");
-    expect(formData.get("description")).toBe("");
   });
 });
