@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     exclude: ["**/node_modules/**", "**/dist/**"],
   },
+  esbuild: {
+    jsx: "automatic",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./"),
