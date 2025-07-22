@@ -17,55 +17,42 @@ export async function createBoard(formData: FormData) {
 
   const validatedData = createBoardSchema.parse(rawData);
 
-  let boardId: string;
+  const board = await prisma.board.create({
+    data: {
+      title: validatedData.title,
+      description: validatedData.description || null,
+    },
+  });
 
-  try {
-    const board = await prisma.board.create({
-      data: {
-        title: validatedData.title,
-        description: validatedData.description || null,
-      },
-    });
+  const defaultColumns = [
+    { title: "To Do", position: 0, color: "#ef4444" },
+    { title: "In Progress", position: 1, color: "#f59e0b" },
+    { title: "Done", position: 2, color: "#10b981" },
+  ];
 
-    const defaultColumns = [
-      { title: "To Do", position: 0, color: "#ef4444" },
-      { title: "In Progress", position: 1, color: "#f59e0b" },
-      { title: "Done", position: 2, color: "#10b981" },
-    ];
+  await prisma.column.createMany({
+    data: defaultColumns.map((column) => ({
+      ...column,
+      boardId: board.id,
+    })),
+  });
 
-    await prisma.column.createMany({
-      data: defaultColumns.map((column) => ({
-        ...column,
-        boardId: board.id,
-      })),
-    });
-
-    boardId = board.id;
-  } catch (error) {
-    console.error("Failed to create board:", error);
-    throw new Error("ボードの作成に失敗しました");
-  }
-
-  redirect(`/boards/${boardId}`);
+  redirect(`/boards/${board.id}`);
 }
 
 export async function getBoards() {
-  try {
-    const boards = await prisma.board.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        createdAt: true,
-      },
-    });
+  // throw new Error("test");
+  const boards = await prisma.board.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      createdAt: true,
+    },
+  });
 
-    return boards;
-  } catch (error) {
-    console.error("Failed to fetch boards:", error);
-    return [];
-  }
+  return boards;
 }
