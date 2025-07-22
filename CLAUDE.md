@@ -76,14 +76,26 @@ npx prisma studio
 - ESLint is configured with Next.js rules
 - Tailwind CSS is configured for the project
 
+## コンポーネント設計
+
+- `default`エクスポートは禁止
+- `export const Component = (props:Props)=>{}`のようなnamed exportにすること
+- コンポーネント名はキャピタルケースにすること
+- 型を定義する時はinterfaceの利用は禁止。typeを利用すること
+- コンポーネントのpropsの型を定義するときは`type Props =`のように大文字の`Props`を利用すること
+- API通信などのロジックはカスタムフックを利用して分離すること
+
 ## テスト
 
 - テストはVitestを利用すること
-- テストファイルはテストの対象となるファイルの隣に置いて
-  - たとえば`actions/board.ts`なら`actions/board.spec.ts`にする
+- テストファイルはテストの対象となるファイルの隣に置くこと
+  - たとえば`actions/board.ts`なら`actions/board.spec.ts`にすること
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
-- カスタムフックのテストをしたい場合はコンポーネントのテストで書いて。
-- GitHub ActionsでテストのCIを実行したい。
+- カスタムフックのテストをしたい場合はコンポーネントのテストで書くこと。
+- GitHub ActionsでテストのCIを実行して。
+- 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
+- `userEvent.setup();`の利用は禁止
+- `console.log`を利用したテストは禁止
 
 ## Database Connection
 

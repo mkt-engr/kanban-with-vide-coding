@@ -8,14 +8,14 @@ const mockPrisma = prisma as typeof prisma & {
   board: { create: ReturnType<typeof vi.fn> }
   column: { createMany: ReturnType<typeof vi.fn> }
 }
-const mockRedirect = redirect as ReturnType<typeof vi.fn>
+const mockRedirect = vi.mocked(redirect)
 
 describe('createBoard Server Action', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should create board and default columns successfully', async () => {
+  it('ボードとデフォルトカラムが正常に作成されること', async () => {
     const mockBoard = { id: 'board-123', title: 'テストボード' }
     mockPrisma.board.create.mockResolvedValue(mockBoard)
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 })
@@ -47,7 +47,7 @@ describe('createBoard Server Action', () => {
     expect(mockRedirect).toHaveBeenCalledWith('/boards/board-123')
   })
 
-  it('should handle board creation with empty description', async () => {
+  it('説明が空の場合のボード作成を処理できること', async () => {
     const mockBoard = { id: 'board-456', title: 'タイトルのみ' }
     mockPrisma.board.create.mockResolvedValue(mockBoard)
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 })
@@ -66,7 +66,7 @@ describe('createBoard Server Action', () => {
     })
   })
 
-  it('should throw error for invalid title', async () => {
+  it('無効なタイトルの場合エラーが発生すること', async () => {
     const formData = new FormData()
     formData.append('title', '') // Empty title
     formData.append('description', 'テストの説明')
@@ -74,7 +74,7 @@ describe('createBoard Server Action', () => {
     await expect(createBoard(formData)).rejects.toThrow()
   })
 
-  it('should handle database error during board creation', async () => {
+  it('ボード作成時のデータベースエラーを処理できること', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockPrisma.board.create.mockRejectedValue(new Error('Database error'))
 
@@ -87,7 +87,7 @@ describe('createBoard Server Action', () => {
     consoleSpy.mockRestore()
   })
 
-  it('should handle database error during column creation', async () => {
+  it('カラム作成時のデータベースエラーを処理できること', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const mockBoard = { id: 'board-789', title: 'テストボード' }
     mockPrisma.board.create.mockResolvedValue(mockBoard)
@@ -102,7 +102,7 @@ describe('createBoard Server Action', () => {
     consoleSpy.mockRestore()
   })
 
-  it('should create board with null description when not provided', async () => {
+  it('説明が提供されない場合にnullでボードが作成されること', async () => {
     const mockBoard = { id: 'board-null', title: 'タイトルのみ' }
     mockPrisma.board.create.mockResolvedValue(mockBoard)
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 })
