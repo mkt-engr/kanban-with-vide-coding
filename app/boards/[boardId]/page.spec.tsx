@@ -161,15 +161,9 @@ describe('BoardPage', () => {
   })
 
   it('データベースエラーを処理できること', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockPrisma.board.findUnique.mockRejectedValue(new Error('Database error'))
 
-    await expect(BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })).rejects.toThrow('NEXT_NOT_FOUND')
-
-    expect(mockNotFound).toHaveBeenCalled()
-    expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch board:', expect.any(Error))
-    
-    consoleSpy.mockRestore()
+    await expect(BoardPage({ params: Promise.resolve({ boardId: 'board-1' }) })).rejects.toThrow('Database error')
   })
 
   it('説明や期限のないタスクを表示できること', async () => {

@@ -87,7 +87,16 @@ npx prisma studio
 - 型を定義する時はinterfaceの利用は禁止。typeを利用すること
 - コンポーネントのpropsの型を定義するときは`type Props =`のように大文字の`Props`を利用すること
 - API通信などのロジックはカスタムフックを利用して分離すること
+- コンポーネント内でtry-catchは使わないこと。
+- サーバーアクションでもtry-catchを使わないこと。
 - エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
+- Loading状態はSuspenseを利用してローディングの画面を表示して
+
+
+
+## バリデーション
+
+- zodを使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
 
 ## テスト
 
@@ -100,6 +109,8 @@ npx prisma studio
 - 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
 - `userEvent.setup();`の利用は禁止
 - `console.log`を利用したテストは禁止
+- 利用したモックは必ず解除すること
+  - restoreやusingを使っても良い
 
 ## Database Connection
 
