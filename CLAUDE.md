@@ -106,6 +106,7 @@ npx prisma studio
 - `userEvent.setup();`の利用は禁止
 - `console.log`を利用したテストは禁止
 - 利用したモックは必ず解除すること
+  - restoreやusingを使っても良い
 
 ## Database Connection
 
