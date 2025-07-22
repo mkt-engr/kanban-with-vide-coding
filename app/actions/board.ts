@@ -1,23 +1,23 @@
-"use server";
+'use server'
 
-import { redirect } from "next/navigation";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { redirect } from 'next/navigation'
+import { z } from 'zod'
+import { prisma } from '@/lib/prisma'
 
 const createBoardSchema = z.object({
-  title: z.string().min(1, "タイトルは必須です"),
+  title: z.string().min(1, 'タイトルは必須です'),
   description: z.string().nullable().optional(),
-});
+})
 
 export async function createBoard(formData: FormData) {
   const rawData = {
-    title: formData.get("title") as string,
-    description: formData.get("description") as string | null,
-  };
+    title: formData.get('title') as string,
+    description: formData.get('description') as string | null,
+  }
 
-  const validatedData = createBoardSchema.parse(rawData);
+  const validatedData = createBoardSchema.parse(rawData)
 
-  let boardId: string;
+  let boardId: string
 
   try {
     const board = await prisma.board.create({
@@ -25,35 +25,35 @@ export async function createBoard(formData: FormData) {
         title: validatedData.title,
         description: validatedData.description || null,
       },
-    });
+    })
 
     const defaultColumns = [
-      { title: "To Do", position: 0, color: "#ef4444" },
-      { title: "In Progress", position: 1, color: "#f59e0b" },
-      { title: "Done", position: 2, color: "#10b981" },
-    ];
+      { title: 'To Do', position: 0, color: '#ef4444' },
+      { title: 'In Progress', position: 1, color: '#f59e0b' },
+      { title: 'Done', position: 2, color: '#10b981' },
+    ]
 
     await prisma.column.createMany({
-      data: defaultColumns.map((column) => ({
+      data: defaultColumns.map(column => ({
         ...column,
         boardId: board.id,
       })),
-    });
+    })
 
-    boardId = board.id;
+    boardId = board.id
   } catch (error) {
-    console.error("Failed to create board:", error);
-    throw new Error("ボードの作成に失敗しました");
+    console.error('Failed to create board:', error)
+    throw new Error('ボードの作成に失敗しました')
   }
 
-  redirect(`/boards/${boardId}`);
+  redirect(`/boards/${boardId}`)
 }
 
 export async function getBoards() {
   try {
     const boards = await prisma.board.findMany({
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
       select: {
         id: true,
@@ -61,11 +61,11 @@ export async function getBoards() {
         description: true,
         createdAt: true,
       },
-    });
+    })
 
-    return boards;
+    return boards
   } catch (error) {
-    console.error("Failed to fetch boards:", error);
-    return [];
+    console.error('Failed to fetch boards:', error)
+    return []
   }
 }

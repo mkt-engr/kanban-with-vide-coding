@@ -1,16 +1,16 @@
-import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import Link from 'next/link'
+import { formatDate } from '@/lib/utils'
 
 type Board = {
-  id: string;
-  title: string;
-  description: string | null;
-  createdAt: Date;
-};
+  id: string
+  title: string
+  description: string | null
+  createdAt: Date
+}
 
 type Props = {
-  boards: Board[];
-};
+  boards: Board[]
+}
 
 export const BoardList = ({ boards }: Props) => {
   if (boards.length === 0) {
@@ -40,12 +40,12 @@ export const BoardList = ({ boards }: Props) => {
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {boards.map((board) => (
+      {boards.map(board => (
         <Link
           key={board.id}
           href={`/boards/${board.id}`}
@@ -67,5 +67,5 @@ export const BoardList = ({ boards }: Props) => {
         </Link>
       ))}
     </div>
-  );
-};
+  )
+}

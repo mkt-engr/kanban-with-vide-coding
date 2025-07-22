@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { ChevronLeft } from 'lucide-react'
+import { prisma } from '@/lib/prisma'
 
 async function getBoardWithColumns(boardId: string) {
   try {
@@ -9,33 +9,33 @@ async function getBoardWithColumns(boardId: string) {
       where: { id: boardId },
       include: {
         columns: {
-          orderBy: { position: "asc" },
+          orderBy: { position: 'asc' },
           include: {
             tasks: {
-              orderBy: { position: "asc" },
+              orderBy: { position: 'asc' },
             },
           },
         },
       },
-    });
+    })
 
-    return board;
+    return board
   } catch (error) {
-    console.error("Failed to fetch board:", error);
-    return null;
+    console.error('Failed to fetch board:', error)
+    return null
   }
 }
 
 export default async function BoardPage({
   params,
 }: {
-  params: Promise<{ boardId: string }>;
+  params: Promise<{ boardId: string }>
 }) {
-  const { boardId } = await params;
-  const board = await getBoardWithColumns(boardId);
+  const { boardId } = await params
+  const board = await getBoardWithColumns(boardId)
 
   if (!board) {
-    notFound();
+    notFound()
   }
 
   return (
@@ -59,7 +59,7 @@ export default async function BoardPage({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {board.columns.map((column) => (
+        {board.columns.map(column => (
           <div
             key={column.id}
             className="bg-card rounded-lg border p-4 min-h-[400px]"
@@ -78,7 +78,7 @@ export default async function BoardPage({
             </div>
 
             <div className="space-y-3">
-              {column.tasks.map((task) => (
+              {column.tasks.map(task => (
                 <div
                   key={task.id}
                   className="bg-background border rounded-lg p-3 shadow-sm"
@@ -104,5 +104,5 @@ export default async function BoardPage({
         ))}
       </div>
     </div>
-  );
+  )
 }
