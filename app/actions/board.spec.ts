@@ -12,7 +12,7 @@ const mockRedirect = vi.mocked(redirect);
 
 describe("createBoard Server Action", () => {
   beforeEach(() => {
-    vi.clearAllMocks(); //
+    vi.clearAllMocks();
   });
 
   it("ボードとデフォルトカラムが正常に作成されること", async () => {
