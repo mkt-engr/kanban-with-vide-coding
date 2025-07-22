@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,19 +16,40 @@ import { Textarea } from "@/components/ui/textarea";
 import { createBoard } from "@/app/actions/board";
 import { Plus } from "lucide-react";
 
+const SubmitButton = () => {
+  const { pending } = useFormStatus();
+  
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? "作成中..." : "作成"}
+    </Button>
+  );
+};
+
+const CancelButton = ({ onClick }: { onClick: () => void }) => {
+  const { pending } = useFormStatus();
+  
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={onClick}
+      disabled={pending}
+    >
+      キャンセル
+    </Button>
+  );
+};
+
 export function CreateBoardDialog() {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsLoading(true);
     try {
       await createBoard(formData);
       setOpen(false);
     } catch (error) {
       console.error("Failed to create board:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -51,7 +73,6 @@ export function CreateBoardDialog() {
               name="title"
               placeholder="ボードのタイトルを入力してください"
               required
-              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -61,21 +82,11 @@ export function CreateBoardDialog() {
               name="description"
               placeholder="ボードの説明を入力してください（任意）"
               rows={3}
-              disabled={isLoading}
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
-              キャンセル
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "作成中..." : "作成"}
-            </Button>
+            <CancelButton onClick={() => setOpen(false)} />
+            <SubmitButton />
           </div>
         </form>
       </DialogContent>
