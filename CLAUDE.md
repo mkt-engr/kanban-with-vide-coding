@@ -105,6 +105,7 @@ npx prisma studio
 - 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
 - `userEvent.setup();`の利用は禁止
 - `console.log`を利用したテストは禁止
+- 利用したモックは必ず解除すること
 
 ## Database Connection
 
