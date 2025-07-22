@@ -147,17 +147,14 @@ describe("CreateBoardDialog", () => {
     const submitButton = screen.getByRole("button", { name: "作成" });
     await userEvent.click(submitButton);
 
-    // Wait for error to be logged
+    // Wait for error UI to appear (handled by FormErrorBoundary)
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Failed to create board:",
-        expect.any(Error)
-      );
+      expect(screen.getByText("フォームエラー")).toBeInTheDocument();
     });
 
-    // Loading state should be cleared
-    expect(screen.getByText("作成")).toBeInTheDocument();
-    expect(titleInput).not.toBeDisabled();
+    // Check that error is displayed
+    expect(screen.getByText("Server error")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "再試行" })).toBeInTheDocument();
 
     consoleSpy.mockRestore();
   });

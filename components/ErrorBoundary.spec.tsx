@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -11,8 +11,16 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
 };
 
 describe("ErrorBoundary", () => {
-  // コンソールエラーを抑制
-  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  let consoleSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    // コンソールエラーを抑制
+    consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
 
   it("エラーが発生しない場合は子コンポーネントを表示する", () => {
     render(
@@ -37,24 +45,20 @@ describe("ErrorBoundary", () => {
   });
 
   it("再試行ボタンをクリックすると状態がリセットされる", async () => {
-    const user = userEvent.setup();
-    
-    const { rerender } = render(
-      <ErrorBoundary>
-        <ThrowError shouldThrow={true} />
+    const TestComponent = ({ shouldThrow, key }: { shouldThrow: boolean; key: string }) => (
+      <ErrorBoundary key={key}>
+        <ThrowError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     );
+
+    const { rerender } = render(<TestComponent shouldThrow={true} key="error" />);
 
     expect(screen.getByText("何か問題が発生しました")).toBeInTheDocument();
 
     const retryButton = screen.getByRole("button", { name: "再試行" });
-    await user.click(retryButton);
+    await userEvent.click(retryButton);
 
-    rerender(
-      <ErrorBoundary>
-        <ThrowError shouldThrow={false} />
-      </ErrorBoundary>
-    );
+    rerender(<TestComponent shouldThrow={false} key="success" />);
 
     expect(screen.getByText("正常なコンテンツ")).toBeInTheDocument();
   });
@@ -72,6 +76,4 @@ describe("ErrorBoundary", () => {
 
     expect(screen.getByText("カスタムエラー: テストエラーメッセージ")).toBeInTheDocument();
   });
-
-  consoleSpy.mockRestore();
 });

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FormErrorBoundary } from "./FormErrorBoundary";
@@ -11,8 +11,16 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
 };
 
 describe("FormErrorBoundary", () => {
-  // コンソールエラーを抑制
-  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  let consoleSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    // コンソールエラーを抑制
+    consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
 
   it("エラーが発生しない場合は子コンポーネントを表示する", () => {
     render(
@@ -37,7 +45,6 @@ describe("FormErrorBoundary", () => {
   });
 
   it("onRetryが提供された場合再試行ボタンで実行される", async () => {
-    const user = userEvent.setup();
     const mockOnRetry = vi.fn();
 
     render(
@@ -47,7 +54,7 @@ describe("FormErrorBoundary", () => {
     );
 
     const retryButton = screen.getByRole("button", { name: "再試行" });
-    await user.click(retryButton);
+    await userEvent.click(retryButton);
 
     expect(mockOnRetry).toHaveBeenCalledOnce();
   });
@@ -65,6 +72,4 @@ describe("FormErrorBoundary", () => {
 
     expect(screen.getByText("フォームの処理中にエラーが発生しました")).toBeInTheDocument();
   });
-
-  consoleSpy.mockRestore();
 });
