@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CreateBoardDialog } from "./CreateBoardDialog";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBoard } from "@/app/actions/board";
+import { CreateBoardDialog } from "./CreateBoardDialog";
 
 // サーバーアクションのモック
 vi.mock("@/app/actions/board", () => ({
@@ -16,7 +16,7 @@ describe("CreateBoardDialog", () => {
     vi.clearAllMocks();
   });
 
-  it('ダイアログが正しく開閉されること', async () => {
+  it("ダイアログが正しく開閉されること", async () => {
     render(<CreateBoardDialog />);
 
     // Dialog should be closed initially
@@ -39,7 +39,7 @@ describe("CreateBoardDialog", () => {
     });
   });
 
-  it('フォームフィールドが正しく表示されること', async () => {
+  it("フォームフィールドが正しく表示されること", async () => {
     render(<CreateBoardDialog />);
 
     // Open dialog
@@ -55,7 +55,7 @@ describe("CreateBoardDialog", () => {
     ).toBeInTheDocument();
   });
 
-  it('フォーム送信が正しく処理されること', async () => {
+  it("フォーム送信が正しく処理されること", async () => {
     mockCreateBoard.mockResolvedValue(undefined);
 
     render(<CreateBoardDialog />);
@@ -78,7 +78,7 @@ describe("CreateBoardDialog", () => {
     // Wait for createBoard to be called and verify FormData
     await waitFor(() => {
       expect(mockCreateBoard).toHaveBeenCalledTimes(1);
-      
+
       const formData = mockCreateBoard.mock.calls[0][0];
       expect(formData).toBeInstanceOf(FormData);
       expect(formData.get("title")).toBe("テストボード");
@@ -86,7 +86,7 @@ describe("CreateBoardDialog", () => {
     });
   });
 
-  it('送信中に無効状態が表示されること', async () => {
+  it("送信中に無効状態が表示されること", async () => {
     // Mock server action to return immediately but still trigger loading state
     mockCreateBoard.mockResolvedValue(undefined);
 
@@ -115,7 +115,7 @@ describe("CreateBoardDialog", () => {
     });
   });
 
-  it('タイトルフィールドが必須であること', async () => {
+  it("タイトルフィールドが必須であること", async () => {
     render(<CreateBoardDialog />);
 
     // Open dialog
@@ -131,7 +131,7 @@ describe("CreateBoardDialog", () => {
     expect(titleInput).toBeInvalid();
   });
 
-  it('サーバーアクションエラーを処理できること', async () => {
+  it("サーバーアクションエラーを処理できること", async () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockCreateBoard.mockRejectedValue(new Error("Server error"));
 
@@ -162,7 +162,7 @@ describe("CreateBoardDialog", () => {
     consoleSpy.mockRestore();
   });
 
-  it('タイトルのみでの送信ができること', async () => {
+  it("タイトルのみでの送信ができること", async () => {
     mockCreateBoard.mockResolvedValue(undefined);
 
     render(<CreateBoardDialog />);
@@ -181,7 +181,7 @@ describe("CreateBoardDialog", () => {
 
     await waitFor(() => {
       expect(mockCreateBoard).toHaveBeenCalledTimes(1);
-      
+
       const formData = mockCreateBoard.mock.calls[0][0];
       expect(formData).toBeInstanceOf(FormData);
       expect(formData.get("title")).toBe("タイトルのみ");

@@ -49,11 +49,13 @@ npx prisma studio
 ## Architecture
 
 ### Database Schema
+
 - **Board**: Kanban boards with title, description, and timestamps
 - **Column**: Board columns with title, position, color, and board relationship
 - **Task**: Individual tasks with title, description, position, priority (LOW/MEDIUM/HIGH/URGENT), due date, completion status, and column relationship
 
 ### Project Structure
+
 - `app/`: Next.js App Router directory structure
   - `layout.tsx`: Root layout with Geist fonts
   - `page.tsx`: Main page (currently default Next.js template)
@@ -63,6 +65,7 @@ npx prisma studio
 - `public/`: Static assets
 
 ### Key Technologies
+
 - **Next.js 15**: React framework with App Router
 - **React 19**: Latest React version
 - **TypeScript**: Type safety
@@ -74,6 +77,7 @@ npx prisma studio
 - **lucide-react**: Icon library
 
 ### Configuration
+
 - shadcn/ui is configured with new-york style, CSS variables, and path aliases
 - TypeScript path mapping: `@/*` maps to project root
 - ESLint is configured with Next.js rules
@@ -104,6 +108,7 @@ npx prisma studio
 ## Database Connection
 
 The application expects a `DATABASE_URL` environment variable for PostgreSQL connection. For local development, use the provided Docker Compose setup with these default credentials:
+
 - Database: kanban-app
 - User: user
 - Password: password

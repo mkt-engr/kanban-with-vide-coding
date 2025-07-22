@@ -10,7 +10,7 @@ type Props = {
 
 export const CancelButton = ({ onClick, children }: Props) => {
   const { pending } = useFormStatus();
-  
+
   return (
     <Button
       type="button"

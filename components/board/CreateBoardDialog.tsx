@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Plus } from "lucide-react";
+import { createBoard } from "@/app/actions/board";
 import { Button } from "@/components/ui/Button";
+import { CancelButton } from "@/components/ui/CancelButton";
 import {
   Dialog,
   DialogContent,
@@ -11,11 +14,8 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/Textarea";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { CancelButton } from "@/components/ui/CancelButton";
-import { createBoard } from "@/app/actions/board";
-import { Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
 
 export function CreateBoardDialog() {
   const [open, setOpen] = useState(false);

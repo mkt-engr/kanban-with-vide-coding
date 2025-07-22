@@ -1,6 +1,6 @@
-import { CreateBoardDialog } from "@/components/board/CreateBoardDialog";
-import { BoardList } from "@/components/board/BoardList";
 import { getBoards } from "@/app/actions/board";
+import { BoardList } from "@/components/board/BoardList";
+import { CreateBoardDialog } from "@/components/board/CreateBoardDialog";
 
 export default async function Home() {
   const boards = await getBoards();

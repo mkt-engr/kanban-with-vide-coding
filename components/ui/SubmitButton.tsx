@@ -10,7 +10,7 @@ type Props = {
 
 export const SubmitButton = ({ children, loadingText }: Props) => {
   const { pending } = useFormStatus();
-  
+
   return (
     <Button type="submit" disabled={pending}>
       {pending ? loadingText || "送信中..." : children}
