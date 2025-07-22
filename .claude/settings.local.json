@@ -25,7 +25,8 @@
       "Bash(gh run view:*)",
       "Bash(gh run list:*)",
       "Bash(pnpm install:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [
       "Bash(rm -rf *)"

@@ -64,9 +64,7 @@ export function CreateBoardDialog() {
             <CancelButton onClick={() => setOpen(false)}>
               キャンセル
             </CancelButton>
-            <SubmitButton loadingText="作成中...">
-              作成
-            </SubmitButton>
+            <SubmitButton loadingText="作成中...">作成</SubmitButton>
           </div>
         </form>
       </DialogContent>

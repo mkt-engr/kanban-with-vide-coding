@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 async function getBoardWithColumns(boardId: string) {
@@ -39,6 +41,15 @@ export default async function BoardPage({
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>ボード一覧に戻る</span>
+          </Link>
+        </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">
           {board.title}
         </h1>

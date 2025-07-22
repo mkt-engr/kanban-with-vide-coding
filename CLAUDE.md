@@ -87,6 +87,7 @@ npx prisma studio
 - 型を定義する時はinterfaceの利用は禁止。typeを利用すること
 - コンポーネントのpropsの型を定義するときは`type Props =`のように大文字の`Props`を利用すること
 - API通信などのロジックはカスタムフックを利用して分離すること
+- エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
 
 ## テスト
 

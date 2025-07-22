@@ -48,3 +48,24 @@ export async function createBoard(formData: FormData) {
 
   redirect(`/boards/${boardId}`);
 }
+
+export async function getBoards() {
+  try {
+    const boards = await prisma.board.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        createdAt: true,
+      },
+    });
+
+    return boards;
+  } catch (error) {
+    console.error("Failed to fetch boards:", error);
+    return [];
+  }
+}
