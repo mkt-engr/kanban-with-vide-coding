@@ -22,7 +22,7 @@ type Props = Readonly<{
   children: React.ReactNode;
 }>;
 
-export const RootLayout = ({ children }: Props) => {
+export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <body
@@ -32,6 +32,4 @@ export const RootLayout = ({ children }: Props) => {
       </body>
     </html>
   );
-};
-
-export default RootLayout;
+}

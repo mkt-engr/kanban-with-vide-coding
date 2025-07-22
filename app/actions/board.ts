@@ -41,7 +41,6 @@ export async function createBoard(formData: FormData) {
 }
 
 export async function getBoards() {
-  // throw new Error("test");
   const boards = await prisma.board.findMany({
     orderBy: {
       createdAt: "desc",
