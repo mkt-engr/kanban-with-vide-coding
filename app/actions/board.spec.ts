@@ -8,7 +8,7 @@ const mockPrisma = prisma as typeof prisma & {
   board: { create: ReturnType<typeof vi.fn> }
   column: { createMany: ReturnType<typeof vi.fn> }
 }
-const mockRedirect = redirect as ReturnType<typeof vi.fn>
+const mockRedirect = vi.mocked(redirect)
 
 describe('createBoard Server Action', () => {
   beforeEach(() => {

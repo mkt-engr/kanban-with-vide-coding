@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation'
 const mockPrisma = prisma as typeof prisma & {
   board: { findUnique: ReturnType<typeof vi.fn> }
 }
-const mockNotFound = notFound as ReturnType<typeof vi.fn>
+const mockNotFound = vi.mocked(notFound)
 
 describe('BoardPage', () => {
   const mockBoard = {
