@@ -1,4 +1,4 @@
-import { CreateBoardDialog } from "@/components/board/create-board-dialog";
+import { CreateBoardDialog } from "@/components/board/CreateBoardDialog";
 
 export default function Home() {
   return (

@@ -1,45 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ui/Dialog";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
+import { SubmitButton } from "@/components/ui/SubmitButton";
+import { CancelButton } from "@/components/ui/CancelButton";
 import { createBoard } from "@/app/actions/board";
 import { Plus } from "lucide-react";
-
-const SubmitButton = () => {
-  const { pending } = useFormStatus();
-  
-  return (
-    <Button type="submit" disabled={pending}>
-      {pending ? "作成中..." : "作成"}
-    </Button>
-  );
-};
-
-const CancelButton = ({ onClick }: { onClick: () => void }) => {
-  const { pending } = useFormStatus();
-  
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      onClick={onClick}
-      disabled={pending}
-    >
-      キャンセル
-    </Button>
-  );
-};
 
 export function CreateBoardDialog() {
   const [open, setOpen] = useState(false);
@@ -85,8 +61,12 @@ export function CreateBoardDialog() {
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <CancelButton onClick={() => setOpen(false)} />
-            <SubmitButton />
+            <CancelButton onClick={() => setOpen(false)}>
+              キャンセル
+            </CancelButton>
+            <SubmitButton loadingText="作成中...">
+              作成
+            </SubmitButton>
           </div>
         </form>
       </DialogContent>

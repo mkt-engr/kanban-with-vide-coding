@@ -10,16 +10,19 @@ This is a Kanban board application built with Next.js 15, React 19, TypeScript, 
 
 ```bash
 # Start development server
-npm run dev
+pnpm dev
 
 # Build for production
-npm start build
+pnpm build
 
 # Start production server
-npm start
+pnpm start
 
 # Run linting
-npm run lint
+pnpm lint
+
+# Run testing
+pnpm test
 ```
 
 ## Database Commands
