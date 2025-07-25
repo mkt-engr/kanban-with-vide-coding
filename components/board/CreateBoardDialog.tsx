@@ -1,33 +1,33 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { createBoard } from '@/app/actions/board';
-import { Button } from '@/components/ui/Button';
-import { CancelButton } from '@/components/ui/CancelButton';
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { createBoard } from '@/app/actions/board'
+import { Button } from '@/components/ui/Button'
+import { CancelButton } from '@/components/ui/CancelButton'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/Dialog';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { SubmitButton } from '@/components/ui/SubmitButton';
-import { Textarea } from '@/components/ui/Textarea';
+} from '@/components/ui/Dialog'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
+import { SubmitButton } from '@/components/ui/SubmitButton'
+import { Textarea } from '@/components/ui/Textarea'
 
 export function CreateBoardDialog() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      await createBoard(formData);
-      setOpen(false);
+      await createBoard(formData)
+      setOpen(false)
     } catch (error) {
-      console.error('Failed to create board:', error);
+      console.error('Failed to create board:', error)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -69,5 +69,5 @@ export function CreateBoardDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
