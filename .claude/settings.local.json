@@ -30,8 +30,6 @@
       "Bash(pnpm format:*)",
       "Bash(git fetch:*)"
     ],
-    "deny": [
-      "Bash(rm -rf *)"
-    ]
+    "deny": ["Bash(rm -rf *)"]
   }
 }

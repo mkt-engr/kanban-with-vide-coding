@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useFormStatus } from 'react-dom'
-import { Button } from '@/components/ui/Button'
+import { useFormStatus } from 'react-dom';
+import { Button } from '@/components/ui/Button';
 
 type Props = {
-  onClick: () => void
-  children?: React.ReactNode
-}
+  onClick: () => void;
+  children?: React.ReactNode;
+};
 
 export const CancelButton = ({ onClick, children }: Props) => {
-  const { pending } = useFormStatus()
+  const { pending } = useFormStatus();
 
   return (
     <Button
@@ -20,5 +20,5 @@ export const CancelButton = ({ onClick, children }: Props) => {
     >
       {children}
     </Button>
-  )
-}
+  );
+};
