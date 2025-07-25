@@ -86,24 +86,33 @@ npx prisma studio
 ## コンポーネント設計
 
 - `default`エクスポートは禁止
-- `export const Component = (props:Props)=>{}`のようなnamed exportにすること
+- `export const Component = (props:Props)=>{}`のような named export にすること
 - コンポーネント名はキャピタルケースにすること
-- 型を定義する時はinterfaceの利用は禁止。typeを利用すること
-- コンポーネントのpropsの型を定義するときは`type Props =`のように大文字の`Props`を利用すること
-- API通信などのロジックはカスタムフックを利用して分離すること
-- エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
+- 型を定義する時は interface の利用は禁止。type を利用すること
+- コンポーネントの props の型を定義するときは`type Props =`のように大文字の`Props`を利用すること
+- API 通信などのロジックはカスタムフックを利用して分離すること
+- コンポーネント内で try-catch は使わないこと。
+- サーバーアクションでも try-catch を使わないこと。
+- エラーは握り潰さず throw して ErrorBoundary でキャッチすること
+- Loading 状態は Suspense を利用してローディングの画面を表示して
+
+## バリデーション
+
+- zod を使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
 
 ## テスト
 
-- テストはVitestを利用すること
+- テストは Vitest を利用すること
 - テストファイルはテストの対象となるファイルの隣に置くこと
   - たとえば`actions/board.ts`なら`actions/board.spec.ts`にすること
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
 - カスタムフックのテストをしたい場合はコンポーネントのテストで書くこと。
-- GitHub ActionsでテストのCIを実行して。
-- 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
+- GitHub Actions でテストの CI を実行して。
+- 文字を入力するときは userEvent.type ではなく userEvent.paste にすること。
 - `userEvent.setup();`の利用は禁止
-- `console.log`を利用したテストは禁止
+- `console.log`や`console.error`を利用したテストは禁止
+- 利用したモックは必ず解除すること
+  - restore や using を使っても良い
 
 ## Database Connection
 

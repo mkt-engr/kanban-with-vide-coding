@@ -85,11 +85,11 @@ export default async function BoardPage({
                     </p>
                   )}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="capitalize">
-                      {task.priority.toLowerCase()}
-                    </span>
+                    <span className="capitalize">{task.priority.toLowerCase()}</span>
                     {task.dueDate && (
-                      <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(task.dueDate).toLocaleDateString()}
+                      </span>
                     )}
                   </div>
                 </div>

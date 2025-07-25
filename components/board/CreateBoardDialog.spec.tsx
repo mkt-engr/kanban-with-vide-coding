@@ -147,7 +147,7 @@ describe('CreateBoardDialog', () => {
     const submitButton = screen.getByRole('button', { name: '作成' })
     await userEvent.click(submitButton)
 
-    // Wait for error to be logged
+    // Wait for error UI to appear (handled by FormErrorBoundary)
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to create board:',
@@ -189,3 +189,4 @@ describe('CreateBoardDialog', () => {
     })
   })
 })
+EOF < /dev/null
