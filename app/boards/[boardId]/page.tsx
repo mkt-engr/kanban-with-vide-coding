@@ -4,26 +4,21 @@ import { ChevronLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
 async function getBoardWithColumns(boardId: string) {
-  try {
-    const board = await prisma.board.findUnique({
-      where: { id: boardId },
-      include: {
-        columns: {
-          orderBy: { position: 'asc' },
-          include: {
-            tasks: {
-              orderBy: { position: 'asc' },
-            },
+  const board = await prisma.board.findUnique({
+    where: { id: boardId },
+    include: {
+      columns: {
+        orderBy: { position: 'asc' },
+        include: {
+          tasks: {
+            orderBy: { position: 'asc' },
           },
         },
       },
-    })
+    },
+  })
 
-    return board
-  } catch (error) {
-    console.error('Failed to fetch board:', error)
-    return null
-  }
+  return board
 }
 
 export default async function BoardPage({

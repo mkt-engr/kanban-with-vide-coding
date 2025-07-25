@@ -80,25 +80,15 @@ describe('createBoard Server Action', () => {
   })
 
   it('ボード作成時のデータベースエラーを処理できること', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockPrisma.board.create.mockRejectedValue(new Error('Database error'))
 
     const formData = new FormData()
     formData.append('title', 'テストボード')
 
-    await expect(createBoard(formData)).rejects.toThrow(
-      'ボードの作成に失敗しました'
-    )
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to create board:',
-      expect.any(Error)
-    )
-
-    consoleSpy.mockRestore()
+    await expect(createBoard(formData)).rejects.toThrow('Database error')
   })
 
   it('カラム作成時のデータベースエラーを処理できること', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const mockBoard = { id: 'board-789', title: 'テストボード' }
     mockPrisma.board.create.mockResolvedValue(mockBoard)
     mockPrisma.column.createMany.mockRejectedValue(
@@ -109,14 +99,8 @@ describe('createBoard Server Action', () => {
     formData.append('title', 'テストボード')
 
     await expect(createBoard(formData)).rejects.toThrow(
-      'ボードの作成に失敗しました'
+      'Column creation failed'
     )
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to create board:',
-      expect.any(Error)
-    )
-
-    consoleSpy.mockRestore()
   })
 
   it('説明が提供されない場合にnullでボードが作成されること', async () => {

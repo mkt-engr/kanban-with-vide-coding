@@ -27,8 +27,11 @@
       "Bash(pnpm install:*)",
       "Bash(npx tsc:*)",
       "Bash(git mv:*)",
-      "Bash(pnpm format:*)"
+      "Bash(pnpm format:*)",
+      "Bash(git fetch:*)"
     ],
-    "deny": ["Bash(rm -rf *)"]
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
   }
 }
