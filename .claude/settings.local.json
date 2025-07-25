@@ -1,38 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx shadcn:*)",
-      "Bash(mkdir:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm run lint)",
-      "Bash(docker-compose up:*)",
-      "Bash(npx prisma generate:*)",
-      "Bash(npx prisma migrate:*)",
-      "Bash(npm install:*)",
-      "Bash(npm uninstall:*)",
-      "Bash(npm run test:run:*)",
-      "Bash(npx vitest:*)",
-      "Bash(mv:*)",
-      "Bash(pnpm test:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(pnpm type-check:*)",
-      "Bash(pnpm lint:*)",
-      "Bash(git checkout:*)",
-      "Bash(gh pr create:*)",
-      "Bash(gh pr:*)",
-      "Bash(gh run view:*)",
-      "Bash(gh run list:*)",
-      "Bash(pnpm install:*)",
-      "Bash(npx tsc:*)",
-      "Bash(git mv:*)",
-      "Bash(pnpm build:*)",
-      "Bash(find:*)",
-      "Bash(pnpm build:*)"
+      "Bash(grep:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)"
     ],
-    "deny": [
-      "Bash(rm -rf *)"
-    ]
+    "deny": []
   }
 }

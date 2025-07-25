@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { PageErrorBoundary } from "./PageErrorBoundary";
 
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
@@ -40,10 +40,16 @@ describe("PageErrorBoundary", () => {
       </PageErrorBoundary>
     );
 
-    expect(screen.getByText("ページの読み込みに失敗しました")).toBeInTheDocument();
+    expect(
+      screen.getByText("ページの読み込みに失敗しました")
+    ).toBeInTheDocument();
     expect(screen.getByText("ページエラーメッセージ")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "ページを再読み込み" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "ホームに戻る" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "ページを再読み込み" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "ホームに戻る" })
+    ).toBeInTheDocument();
   });
 
   it("ページを再読み込みボタンをクリックするとページが再読み込みされる", async () => {
@@ -56,7 +62,9 @@ describe("PageErrorBoundary", () => {
       </PageErrorBoundary>
     );
 
-    const reloadButton = screen.getByRole("button", { name: "ページを再読み込み" });
+    const reloadButton = screen.getByRole("button", {
+      name: "ページを再読み込み",
+    });
     await user.click(reloadButton);
 
     expect(reloadSpy).toHaveBeenCalledOnce();
@@ -89,7 +97,9 @@ describe("PageErrorBoundary", () => {
     );
 
     expect(
-      screen.getByText("予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。")
+      screen.getByText(
+        "予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。"
+      )
     ).toBeInTheDocument();
   });
 

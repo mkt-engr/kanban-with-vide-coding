@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FormErrorBoundary } from "./FormErrorBoundary";
 
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
@@ -70,6 +70,8 @@ describe("FormErrorBoundary", () => {
       </FormErrorBoundary>
     );
 
-    expect(screen.getByText("フォームの処理中にエラーが発生しました")).toBeInTheDocument();
+    expect(
+      screen.getByText("フォームの処理中にエラーが発生しました")
+    ).toBeInTheDocument();
   });
 });

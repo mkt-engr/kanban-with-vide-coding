@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { DataErrorBoundary } from "./DataErrorBoundary";
 
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
@@ -39,9 +39,13 @@ describe("DataErrorBoundary", () => {
       </DataErrorBoundary>
     );
 
-    expect(screen.getByText("データの読み込みに失敗しました")).toBeInTheDocument();
+    expect(
+      screen.getByText("データの読み込みに失敗しました")
+    ).toBeInTheDocument();
     expect(screen.getByText("データ取得エラー")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "再読み込み" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "再読み込み" })
+    ).toBeInTheDocument();
   });
 
   it("onRetryが提供された場合再読み込みボタンで実行される", async () => {
@@ -87,7 +91,9 @@ describe("DataErrorBoundary", () => {
       </DataErrorBoundary>
     );
 
-    expect(screen.getByText("データの取得中にエラーが発生しました")).toBeInTheDocument();
+    expect(
+      screen.getByText("データの取得中にエラーが発生しました")
+    ).toBeInTheDocument();
   });
 
   consoleSpy.mockRestore();

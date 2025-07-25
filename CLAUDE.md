@@ -49,11 +49,13 @@ npx prisma studio
 ## Architecture
 
 ### Database Schema
+
 - **Board**: Kanban boards with title, description, and timestamps
 - **Column**: Board columns with title, position, color, and board relationship
 - **Task**: Individual tasks with title, description, position, priority (LOW/MEDIUM/HIGH/URGENT), due date, completion status, and column relationship
 
 ### Project Structure
+
 - `app/`: Next.js App Router directory structure
   - `layout.tsx`: Root layout with Geist fonts
   - `page.tsx`: Main page (currently default Next.js template)
@@ -63,6 +65,7 @@ npx prisma studio
 - `public/`: Static assets
 
 ### Key Technologies
+
 - **Next.js 15**: React framework with App Router
 - **React 19**: Latest React version
 - **TypeScript**: Type safety
@@ -74,6 +77,7 @@ npx prisma studio
 - **lucide-react**: Icon library
 
 ### Configuration
+
 - shadcn/ui is configured with new-york style, CSS variables, and path aliases
 - TypeScript path mapping: `@/*` maps to project root
 - ESLint is configured with Next.js rules
@@ -82,39 +86,38 @@ npx prisma studio
 ## コンポーネント設計
 
 - `default`エクスポートは禁止
-- `export const Component = (props:Props)=>{}`のようなnamed exportにすること
+- `export const Component = (props:Props)=>{}`のような named export にすること
 - コンポーネント名はキャピタルケースにすること
-- 型を定義する時はinterfaceの利用は禁止。typeを利用すること
-- コンポーネントのpropsの型を定義するときは`type Props =`のように大文字の`Props`を利用すること
-- API通信などのロジックはカスタムフックを利用して分離すること
-- コンポーネント内でtry-catchは使わないこと。
-- サーバーアクションでもtry-catchを使わないこと。
-- エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
-- Loading状態はSuspenseを利用してローディングの画面を表示して
-
-
+- 型を定義する時は interface の利用は禁止。type を利用すること
+- コンポーネントの props の型を定義するときは`type Props =`のように大文字の`Props`を利用すること
+- API 通信などのロジックはカスタムフックを利用して分離すること
+- コンポーネント内で try-catch は使わないこと。
+- サーバーアクションでも try-catch を使わないこと。
+- エラーは握り潰さず throw して ErrorBoundary でキャッチすること
+- Loading 状態は Suspense を利用してローディングの画面を表示して
 
 ## バリデーション
 
-- zodを使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
+- zod を使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
 
 ## テスト
 
-- テストはVitestを利用すること
+- テストは Vitest を利用すること
 - テストファイルはテストの対象となるファイルの隣に置くこと
   - たとえば`actions/board.ts`なら`actions/board.spec.ts`にすること
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
 - カスタムフックのテストをしたい場合はコンポーネントのテストで書くこと。
-- GitHub ActionsでテストのCIを実行して。
-- 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
+- GitHub Actions でテストの CI を実行して。
+- 文字を入力するときは userEvent.type ではなく userEvent.paste にすること。
 - `userEvent.setup();`の利用は禁止
-- `console.log`を利用したテストは禁止
+- `console.log`や`console.error`を利用したテストは禁止
 - 利用したモックは必ず解除すること
-  - restoreやusingを使っても良い
+  - restore や using を使っても良い
 
 ## Database Connection
 
 The application expects a `DATABASE_URL` environment variable for PostgreSQL connection. For local development, use the provided Docker Compose setup with these default credentials:
+
 - Database: kanban-app
 - User: user
 - Password: password

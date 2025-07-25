@@ -14,7 +14,8 @@ export const PageErrorBoundary = ({ children }: Props) => {
         ページの読み込みに失敗しました
       </h2>
       <p className="text-red-600 text-center mb-6 max-w-md">
-        {error.message || "予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。"}
+        {error.message ||
+          "予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。"}
       </p>
       <div className="flex gap-3">
         <button

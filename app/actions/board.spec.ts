@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createBoard } from "./board";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { prisma } from "@/lib/prisma";
+import { createBoard } from "./board";
 
 // Mocks are automatically set up in setup.ts
 const mockPrisma = prisma as typeof prisma & {

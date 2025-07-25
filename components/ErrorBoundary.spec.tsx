@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
@@ -45,13 +45,21 @@ describe("ErrorBoundary", () => {
   });
 
   it("再試行ボタンをクリックすると状態がリセットされる", async () => {
-    const TestComponent = ({ shouldThrow, key }: { shouldThrow: boolean; key: string }) => (
+    const TestComponent = ({
+      shouldThrow,
+      key,
+    }: {
+      shouldThrow: boolean;
+      key: string;
+    }) => (
       <ErrorBoundary key={key}>
         <ThrowError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     );
 
-    const { rerender } = render(<TestComponent shouldThrow={true} key="error" />);
+    const { rerender } = render(
+      <TestComponent shouldThrow={true} key="error" />
+    );
 
     expect(screen.getByText("何か問題が発生しました")).toBeInTheDocument();
 
@@ -74,6 +82,8 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText("カスタムエラー: テストエラーメッセージ")).toBeInTheDocument();
+    expect(
+      screen.getByText("カスタムエラー: テストエラーメッセージ")
+    ).toBeInTheDocument();
   });
 });
