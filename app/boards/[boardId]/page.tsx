@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { AddTaskDialog } from "@/components/task/AddTaskDialog";
 
 async function getBoardWithColumns(boardId: string) {
   const board = await prisma.board.findUnique({
@@ -95,6 +96,8 @@ export default async function BoardPage({
                 </div>
               ))}
             </div>
+            
+            <AddTaskDialog columnId={column.id} />
           </div>
         ))}
       </div>

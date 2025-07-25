@@ -86,33 +86,33 @@ npx prisma studio
 ## コンポーネント設計
 
 - `default`エクスポートは禁止
-- `export const Component = (props:Props)=>{}`のような named export にすること
+- `export const Component = (props:Props)=>{}`のようなnamed exportにすること
 - コンポーネント名はキャピタルケースにすること
-- 型を定義する時は interface の利用は禁止。type を利用すること
-- コンポーネントの props の型を定義するときは`type Props =`のように大文字の`Props`を利用すること
-- API 通信などのロジックはカスタムフックを利用して分離すること
-- コンポーネント内で try-catch は使わないこと。
-- サーバーアクションでも try-catch を使わないこと。
-- エラーは握り潰さず throw して ErrorBoundary でキャッチすること
-- Loading 状態は Suspense を利用してローディングの画面を表示して
+- 型を定義する時はinterfaceの利用は禁止。typeを利用すること
+- コンポーネントのpropsの型を定義するときは`typeProps=`のように大文字の`Props`を利用すること
+- API通信などのロジックはカスタムフックを利用して分離すること
+- コンポーネント内でtry-catchは使わないこと。
+- サーバーアクションでもtry-catchを使わないこと。
+- エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
+- Loading状態はSuspenseを利用してローディングの画面を表示して
 
 ## バリデーション
 
-- zod を使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
+- zodを使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
 
 ## テスト
 
-- テストは Vitest を利用すること
+- テストはVitestを利用すること
 - テストファイルはテストの対象となるファイルの隣に置くこと
-  - たとえば`actions/board.ts`なら`actions/board.spec.ts`にすること
+- たとえば`actions/board.ts`なら`actions/board.spec.ts`にすること
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
 - カスタムフックのテストをしたい場合はコンポーネントのテストで書くこと。
-- GitHub Actions でテストの CI を実行して。
-- 文字を入力するときは userEvent.type ではなく userEvent.paste にすること。
-- `userEvent.setup();`の利用は禁止
-- `console.log`や`console.error`を利用したテストは禁止
+- GitHubActionsでテストのCIを実行して。
+- 文字を入力するときはuserEvent.typeではなくuserEvent.pasteにすること。
+-`userEvent.setup();`の利用は禁止
+-`console.log`や`console.error`を利用したテストは禁止
 - 利用したモックは必ず解除すること
-  - restore や using を使っても良い
+  - restoreやusingを使っても良い
 
 ## Database Connection
 
@@ -122,3 +122,7 @@ The application expects a `DATABASE_URL` environment variable for PostgreSQL con
 - User: user
 - Password: password
 - Port: 5432
+
+## その他
+
+- commitメッセージやPRの文章は日本語で
