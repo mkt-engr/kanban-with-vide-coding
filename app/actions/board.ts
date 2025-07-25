@@ -31,7 +31,7 @@ export async function createBoard(formData: FormData) {
   ]
 
   await prisma.column.createMany({
-    data: defaultColumns.map(column => ({
+    data: defaultColumns.map((column) => ({
       ...column,
       boardId: board.id,
     })),

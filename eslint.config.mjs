@@ -20,9 +20,7 @@ const eslintConfig = [
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [
-            ['^react$', '^next', '^@?\\w', '^@/', '^[./]'],
-          ],
+          groups: [['^react$', '^next', '^@?\\w', '^@/', '^[./]']],
         },
       ],
       'simple-import-sort/exports': 'error',

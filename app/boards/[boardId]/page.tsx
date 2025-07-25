@@ -54,7 +54,7 @@ export default async function BoardPage({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {board.columns.map(column => (
+        {board.columns.map((column) => (
           <div
             key={column.id}
             className="bg-card rounded-lg border p-4 min-h-[400px]"
@@ -73,7 +73,7 @@ export default async function BoardPage({
             </div>
 
             <div className="space-y-3">
-              {column.tasks.map(task => (
+              {column.tasks.map((task) => (
                 <div
                   key={task.id}
                   className="bg-background border rounded-lg p-3 shadow-sm"
@@ -85,11 +85,11 @@ export default async function BoardPage({
                     </p>
                   )}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="capitalize">{task.priority.toLowerCase()}</span>
+                    <span className="capitalize">
+                      {task.priority.toLowerCase()}
+                    </span>
                     {task.dueDate && (
-                      <span>
-                        {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
+                      <span>{new Date(task.dueDate).toLocaleDateString()}</span>
                     )}
                   </div>
                 </div>
