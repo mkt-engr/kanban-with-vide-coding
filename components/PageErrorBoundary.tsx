@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
-import { ErrorBoundary } from "./ErrorBoundary"
+import { ReactNode } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 type Props = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
 export const PageErrorBoundary = ({ children }: Props) => {
   const fallback = (error: Error) => (
@@ -32,7 +32,7 @@ export const PageErrorBoundary = ({ children }: Props) => {
         </button>
       </div>
     </div>
-  )
+  );
 
-  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>
-}
+  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>;
+};

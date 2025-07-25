@@ -1,7 +1,7 @@
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
-import { prisma } from "@/lib/prisma"
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
 async function getBoardWithColumns(boardId: string) {
   const board = await prisma.board.findUnique({
@@ -16,21 +16,21 @@ async function getBoardWithColumns(boardId: string) {
         },
       },
     },
-  })
+  });
 
-  return board
+  return board;
 }
 
 export default async function BoardPage({
   params,
 }: {
-  params: Promise<{ boardId: string }>
+  params: Promise<{ boardId: string }>;
 }) {
-  const { boardId } = await params
-  const board = await getBoardWithColumns(boardId)
+  const { boardId } = await params;
+  const board = await getBoardWithColumns(boardId);
 
   if (!board) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -99,5 +99,5 @@ export default async function BoardPage({
         ))}
       </div>
     </div>
-  )
+  );
 }

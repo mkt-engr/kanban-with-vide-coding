@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
-import { ErrorBoundary } from "./ErrorBoundary"
+import { ReactNode } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 type Props = {
-  children: ReactNode
-  onRetry?: () => void
-}
+  children: ReactNode;
+  onRetry?: () => void;
+};
 
 export const FormErrorBoundary = ({ children, onRetry }: Props) => {
   const fallback = (error: Error) => (
@@ -24,7 +24,7 @@ export const FormErrorBoundary = ({ children, onRetry }: Props) => {
         再試行
       </button>
     </div>
-  )
+  );
 
-  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>
-}
+  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>;
+};

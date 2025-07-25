@@ -1,13 +1,13 @@
-import { notFound } from "next/navigation"
-import { render, screen } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { prisma } from "@/lib/prisma"
-import BoardPage from "./page"
+import { notFound } from "next/navigation";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { prisma } from "@/lib/prisma";
+import BoardPage from "./page";
 
 const mockPrisma = prisma as typeof prisma & {
-  board: { findUnique: ReturnType<typeof vi.fn> }
-}
-const mockNotFound = vi.mocked(notFound)
+  board: { findUnique: ReturnType<typeof vi.fn> };
+};
+const mockNotFound = vi.mocked(notFound);
 
 describe("BoardPage", () => {
   const mockBoard = {
@@ -60,87 +60,87 @@ describe("BoardPage", () => {
         ],
       },
     ],
-  }
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it("ボード情報が正しく表示されること", async () => {
-    mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
+    mockPrisma.board.findUnique.mockResolvedValue(mockBoard);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
     // Board title and description
-    expect(screen.getByText("テストボード")).toBeInTheDocument()
-    expect(screen.getByText("テストの説明")).toBeInTheDocument()
-  })
+    expect(screen.getByText("テストボード")).toBeInTheDocument();
+    expect(screen.getByText("テストの説明")).toBeInTheDocument();
+  });
 
   it("全てのカラムが正しいタスク数で表示されること", async () => {
-    mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
+    mockPrisma.board.findUnique.mockResolvedValue(mockBoard);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
     // Column titles
-    expect(screen.getByText("To Do")).toBeInTheDocument()
-    expect(screen.getByText("In Progress")).toBeInTheDocument()
-    expect(screen.getByText("Done")).toBeInTheDocument()
+    expect(screen.getByText("To Do")).toBeInTheDocument();
+    expect(screen.getByText("In Progress")).toBeInTheDocument();
+    expect(screen.getByText("Done")).toBeInTheDocument();
 
     // Task counts
-    expect(screen.getByText("(2)")).toBeInTheDocument() // To Do column
-    expect(screen.getByText("(0)")).toBeInTheDocument() // In Progress column
-    expect(screen.getByText("(1)")).toBeInTheDocument() // Done column
-  })
+    expect(screen.getByText("(2)")).toBeInTheDocument(); // To Do column
+    expect(screen.getByText("(0)")).toBeInTheDocument(); // In Progress column
+    expect(screen.getByText("(1)")).toBeInTheDocument(); // Done column
+  });
 
   it("タスクが正しい情報で表示されること", async () => {
-    mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
+    mockPrisma.board.findUnique.mockResolvedValue(mockBoard);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
     // Tasks in To Do column
-    expect(screen.getByText("タスク1")).toBeInTheDocument()
-    expect(screen.getByText("タスク1の説明")).toBeInTheDocument()
-    expect(screen.getByText("high")).toBeInTheDocument()
+    expect(screen.getByText("タスク1")).toBeInTheDocument();
+    expect(screen.getByText("タスク1の説明")).toBeInTheDocument();
+    expect(screen.getByText("high")).toBeInTheDocument();
     expect(
       screen.getByText(new Date("2024-12-31").toLocaleDateString())
-    ).toBeInTheDocument()
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("タスク2")).toBeInTheDocument()
-    expect(screen.getByText("medium")).toBeInTheDocument()
+    expect(screen.getByText("タスク2")).toBeInTheDocument();
+    expect(screen.getByText("medium")).toBeInTheDocument();
 
     // Task in Done column
-    expect(screen.getByText("完了タスク")).toBeInTheDocument()
-    expect(screen.getByText("完了したタスク")).toBeInTheDocument()
-    expect(screen.getByText("low")).toBeInTheDocument()
+    expect(screen.getByText("完了タスク")).toBeInTheDocument();
+    expect(screen.getByText("完了したタスク")).toBeInTheDocument();
+    expect(screen.getByText("low")).toBeInTheDocument();
     expect(
       screen.getByText(new Date("2024-01-01").toLocaleDateString())
-    ).toBeInTheDocument()
-  })
+    ).toBeInTheDocument();
+  });
 
   it("説明のないボードを処理できること", async () => {
     const boardWithoutDescription = {
       ...mockBoard,
       description: null,
-    }
-    mockPrisma.board.findUnique.mockResolvedValue(boardWithoutDescription)
+    };
+    mockPrisma.board.findUnique.mockResolvedValue(boardWithoutDescription);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
-    expect(screen.getByText("テストボード")).toBeInTheDocument()
-    expect(screen.queryByText("テストの説明")).not.toBeInTheDocument()
-  })
+    expect(screen.getByText("テストボード")).toBeInTheDocument();
+    expect(screen.queryByText("テストの説明")).not.toBeInTheDocument();
+  });
 
   it("空のカラムを処理できること", async () => {
     const boardWithEmptyColumns = {
@@ -154,35 +154,35 @@ describe("BoardPage", () => {
           tasks: [],
         },
       ],
-    }
-    mockPrisma.board.findUnique.mockResolvedValue(boardWithEmptyColumns)
+    };
+    mockPrisma.board.findUnique.mockResolvedValue(boardWithEmptyColumns);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
-    expect(screen.getByText("Empty Column")).toBeInTheDocument()
-    expect(screen.getByText("(0)")).toBeInTheDocument()
-  })
+    expect(screen.getByText("Empty Column")).toBeInTheDocument();
+    expect(screen.getByText("(0)")).toBeInTheDocument();
+  });
 
   it("ボードが存在しない場合notFoundが呼ばれること", async () => {
-    mockPrisma.board.findUnique.mockResolvedValue(null)
+    mockPrisma.board.findUnique.mockResolvedValue(null);
 
     await expect(
       BoardPage({ params: Promise.resolve({ boardId: "nonexistent" }) })
-    ).rejects.toThrow("NEXT_NOT_FOUND")
+    ).rejects.toThrow("NEXT_NOT_FOUND");
 
-    expect(mockNotFound).toHaveBeenCalled()
-  })
+    expect(mockNotFound).toHaveBeenCalled();
+  });
 
   it("データベースエラーを処理できること", async () => {
-    mockPrisma.board.findUnique.mockRejectedValue(new Error("Database error"))
+    mockPrisma.board.findUnique.mockRejectedValue(new Error("Database error"));
 
     await expect(
       BoardPage({ params: Promise.resolve({ boardId: "board-1" }) })
-    ).rejects.toThrow("Database error")
-  })
+    ).rejects.toThrow("Database error");
+  });
 
   it("説明や期限のないタスクを表示できること", async () => {
     const boardWithMinimalTask = {
@@ -204,24 +204,24 @@ describe("BoardPage", () => {
           ],
         },
       ],
-    }
-    mockPrisma.board.findUnique.mockResolvedValue(boardWithMinimalTask)
+    };
+    mockPrisma.board.findUnique.mockResolvedValue(boardWithMinimalTask);
 
     const component = await BoardPage({
       params: Promise.resolve({ boardId: "board-1" }),
-    })
-    render(component)
+    });
+    render(component);
 
-    expect(screen.getByText("Minimal Task")).toBeInTheDocument()
-    expect(screen.getByText("urgent")).toBeInTheDocument()
+    expect(screen.getByText("Minimal Task")).toBeInTheDocument();
+    expect(screen.getByText("urgent")).toBeInTheDocument();
     // Description and due date should not be rendered
-    expect(screen.queryByText("null")).not.toBeInTheDocument()
-  })
+    expect(screen.queryByText("null")).not.toBeInTheDocument();
+  });
 
   it("正しいパラメータでprismaが呼ばれること", async () => {
-    mockPrisma.board.findUnique.mockResolvedValue(mockBoard)
+    mockPrisma.board.findUnique.mockResolvedValue(mockBoard);
 
-    await BoardPage({ params: Promise.resolve({ boardId: "test-board-id" }) })
+    await BoardPage({ params: Promise.resolve({ boardId: "test-board-id" }) });
 
     expect(mockPrisma.board.findUnique).toHaveBeenCalledWith({
       where: { id: "test-board-id" },
@@ -235,6 +235,6 @@ describe("BoardPage", () => {
           },
         },
       },
-    })
-  })
-})
+    });
+  });
+});

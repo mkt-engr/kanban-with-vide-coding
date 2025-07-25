@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 export const Input = ({
   className,
@@ -17,5 +17,5 @@ export const Input = ({
       )}
       {...props}
     />
-  )
-}
+  );
+};

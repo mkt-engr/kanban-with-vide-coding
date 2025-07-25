@@ -1,11 +1,11 @@
-import { Suspense } from "react"
-import { getBoards } from "@/app/actions/board"
-import { DataErrorBoundary } from "@/components/DataErrorBoundary"
-import { BoardList } from "./BoardList"
-import { BoardListLoading } from "./BoardListLoading"
+import { Suspense } from "react";
+import { getBoards } from "@/app/actions/board";
+import { DataErrorBoundary } from "@/components/DataErrorBoundary";
+import { BoardList } from "./BoardList";
+import { BoardListLoading } from "./BoardListLoading";
 
 const BoardListContent = async () => {
-  const boards = await getBoards()
+  const boards = await getBoards();
 
   return (
     <>
@@ -17,8 +17,8 @@ const BoardListContent = async () => {
       </div>
       <BoardList boards={boards} />
     </>
-  )
-}
+  );
+};
 
 export const BoardListSection = () => {
   return (
@@ -27,5 +27,5 @@ export const BoardListSection = () => {
         <BoardListContent />
       </Suspense>
     </DataErrorBoundary>
-  )
-}
+  );
+};

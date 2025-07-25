@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { Component, ReactNode } from "react"
+import { Component, ReactNode } from "react";
 
 type ErrorBoundaryState = {
-  hasError: boolean
-  error?: Error
-}
+  hasError: boolean;
+  error?: Error;
+};
 
 type Props = {
-  children: ReactNode
-  fallback?: (error: Error) => ReactNode
-}
+  children: ReactNode;
+  fallback?: (error: Error) => ReactNode;
+};
 
 export const ErrorBoundary = class ErrorBoundary extends Component<
   Props,
   ErrorBoundaryState
 > {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+    super(props);
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo)
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       if (this.props.fallback && this.state.error) {
-        return this.props.fallback(this.state.error)
+        return this.props.fallback(this.state.error);
       }
 
       return (
@@ -50,9 +50,9 @@ export const ErrorBoundary = class ErrorBoundary extends Component<
             再試行
           </button>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
-}
+};
