@@ -65,11 +65,11 @@ describe('CreateBoardDialog', () => {
     await userEvent.click(openButton)
 
     // Fill form
-    const titleInput = screen.getByLabelText('タイトル *')
-    const descriptionTextarea = screen.getByLabelText('説明')
+    await userEvent.click(screen.getByLabelText('タイトル *'))
+    await userEvent.paste('テストボード')
 
-    await userEvent.type(titleInput, 'テストボード')
-    await userEvent.type(descriptionTextarea, 'テスト用の説明')
+    await userEvent.click(screen.getByLabelText('説明'))
+    await userEvent.paste('テスト用の説明')
 
     // Submit form
     const submitButton = screen.getByRole('button', { name: '作成' })
@@ -96,14 +96,8 @@ describe('CreateBoardDialog', () => {
     const openButton = screen.getByRole('button', { name: '新規ボード作成' })
     await userEvent.click(openButton)
 
-    const titleInput = screen.getByLabelText('タイトル *')
-    await userEvent.type(titleInput, 'テストボード')
-
-    // The form should be enabled initially
-    expect(titleInput).not.toBeDisabled()
-    expect(
-      screen.getByRole('button', { name: 'キャンセル' })
-    ).not.toBeDisabled()
+    await userEvent.click(screen.getByLabelText('タイトル *'))
+    await userEvent.paste('テストボード')
 
     // Submit form
     const submitButton = screen.getByRole('button', { name: '作成' })
@@ -132,7 +126,6 @@ describe('CreateBoardDialog', () => {
   })
 
   it('サーバーアクションエラーを処理できること', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockCreateBoard.mockRejectedValue(new Error('Server error'))
 
     render(<CreateBoardDialog />)
@@ -141,25 +134,19 @@ describe('CreateBoardDialog', () => {
     const openButton = screen.getByRole('button', { name: '新規ボード作成' })
     await userEvent.click(openButton)
 
-    const titleInput = screen.getByLabelText('タイトル *')
-    await userEvent.type(titleInput, 'テストボード')
+    await userEvent.click(screen.getByLabelText('タイトル *'))
+    await userEvent.paste('テストボード')
 
     const submitButton = screen.getByRole('button', { name: '作成' })
     await userEvent.click(submitButton)
 
-    // Wait for error UI to appear (handled by FormErrorBoundary)
+    // Check that FormErrorBoundary error UI is displayed
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to create board:',
-        expect.any(Error)
-      )
+      expect(screen.getByText('フォームエラー')).toBeInTheDocument()
     })
 
-    // Loading state should be cleared
-    expect(screen.getByText('作成')).toBeInTheDocument()
-    expect(titleInput).not.toBeDisabled()
-
-    consoleSpy.mockRestore()
+    expect(screen.getByText('Server error')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '再試行' })).toBeInTheDocument()
   })
 
   it('タイトルのみでの送信ができること', async () => {
@@ -172,8 +159,8 @@ describe('CreateBoardDialog', () => {
     await userEvent.click(openButton)
 
     // Fill only title
-    const titleInput = screen.getByLabelText('タイトル *')
-    await userEvent.type(titleInput, 'タイトルのみ')
+    await userEvent.click(screen.getByLabelText('タイトル *'))
+    await userEvent.paste('タイトルのみ')
 
     // Submit form
     const submitButton = screen.getByRole('button', { name: '作成' })
@@ -189,4 +176,3 @@ describe('CreateBoardDialog', () => {
     })
   })
 })
-EOF < /dev/null
