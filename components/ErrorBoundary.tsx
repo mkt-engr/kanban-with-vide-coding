@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { Component, ReactNode } from 'react'
+import { Component, ReactNode } from "react"
 
 type ErrorBoundaryState = {
   hasError: boolean
@@ -26,7 +26,7 @@ export const ErrorBoundary = class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    console.error("ErrorBoundary caught an error:", error, errorInfo)
   }
 
   render() {
@@ -41,7 +41,7 @@ export const ErrorBoundary = class ErrorBoundary extends Component<
             何か問題が発生しました
           </h2>
           <p className="text-red-600 text-sm mb-4">
-            {this.state.error?.message || '予期しないエラーが発生しました'}
+            {this.state.error?.message || "予期しないエラーが発生しました"}
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: undefined })}

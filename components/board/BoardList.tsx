@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { formatDate } from '@/lib/utils'
+import Link from "next/link"
+import { formatDate } from "@/lib/utils"
 
 type Board = {
   id: string

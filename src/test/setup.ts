@@ -1,15 +1,15 @@
-import { afterAll, beforeAll, vi } from 'vitest'
-import '@testing-library/jest-dom'
+import { afterAll, beforeAll, vi } from "vitest"
+import "@testing-library/jest-dom"
 
 // Suppress console warnings in tests
 const originalError = console.error
 beforeAll(() => {
   console.error = (...args: unknown[]) => {
     if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Warning: Missing `Description`') ||
-        args[0].includes('Warning: ReactDOM.render') ||
-        args[0].includes('Warning: React'))
+      typeof args[0] === "string" &&
+      (args[0].includes("Warning: Missing `Description`") ||
+        args[0].includes("Warning: ReactDOM.render") ||
+        args[0].includes("Warning: React"))
     ) {
       return
     }
@@ -22,10 +22,10 @@ afterAll(() => {
 })
 
 // Mock Next.js router
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
   notFound: vi.fn(() => {
-    throw new Error('NEXT_NOT_FOUND')
+    throw new Error("NEXT_NOT_FOUND")
   }),
   useRouter: vi.fn(() => ({
     push: vi.fn(),
@@ -37,7 +37,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock Prisma
-vi.mock('@/lib/prisma', () => ({
+vi.mock("@/lib/prisma", () => ({
   prisma: {
     board: {
       create: vi.fn(),

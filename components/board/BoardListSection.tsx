@@ -1,8 +1,8 @@
-import { Suspense } from 'react'
-import { getBoards } from '@/app/actions/board'
-import { DataErrorBoundary } from '@/components/DataErrorBoundary'
-import { BoardList } from './BoardList'
-import { BoardListLoading } from './BoardListLoading'
+import { Suspense } from "react"
+import { getBoards } from "@/app/actions/board"
+import { DataErrorBoundary } from "@/components/DataErrorBoundary"
+import { BoardList } from "./BoardList"
+import { BoardListLoading } from "./BoardListLoading"
 
 const BoardListContent = async () => {
   const boards = await getBoards()

@@ -1,17 +1,17 @@
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
-import { prisma } from '@/lib/prisma'
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { ChevronLeft } from "lucide-react"
+import { prisma } from "@/lib/prisma"
 
 async function getBoardWithColumns(boardId: string) {
   const board = await prisma.board.findUnique({
     where: { id: boardId },
     include: {
       columns: {
-        orderBy: { position: 'asc' },
+        orderBy: { position: "asc" },
         include: {
           tasks: {
-            orderBy: { position: 'asc' },
+            orderBy: { position: "asc" },
           },
         },
       },

@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { useFormStatus } from 'react-dom'
-import { Button } from '@/components/ui/Button'
+import { useFormStatus } from "react-dom"
+import { Button } from "@/components/ui/Button"
 
 type Props = {
   children?: React.ReactNode
@@ -13,7 +13,7 @@ export const SubmitButton = ({ children, loadingText }: Props) => {
 
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? loadingText || '送信中...' : children}
+      {pending ? loadingText || "送信中..." : children}
     </Button>
   )
 }

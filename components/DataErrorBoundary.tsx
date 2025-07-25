@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { ReactNode } from 'react'
-import { ErrorBoundary } from './ErrorBoundary'
+import { ReactNode } from "react"
+import { ErrorBoundary } from "./ErrorBoundary"
 
 type Props = {
   children: ReactNode
@@ -15,7 +15,7 @@ export const DataErrorBoundary = ({ children, onRetry }: Props) => {
         データの読み込みに失敗しました
       </h3>
       <p className="text-red-600 text-sm mb-4 text-center">
-        {error.message || 'データの取得中にエラーが発生しました'}
+        {error.message || "データの取得中にエラーが発生しました"}
       </p>
       <button
         onClick={onRetry || (() => window.location.reload())}

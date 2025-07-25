@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { ReactNode } from 'react'
-import { ErrorBoundary } from './ErrorBoundary'
+import { ReactNode } from "react"
+import { ErrorBoundary } from "./ErrorBoundary"
 
 type Props = {
   children: ReactNode
@@ -15,7 +15,7 @@ export const FormErrorBoundary = ({ children, onRetry }: Props) => {
         フォームエラー
       </h3>
       <p className="text-red-600 text-sm mb-4">
-        {error.message || 'フォームの処理中にエラーが発生しました'}
+        {error.message || "フォームの処理中にエラーが発生しました"}
       </p>
       <button
         onClick={onRetry}

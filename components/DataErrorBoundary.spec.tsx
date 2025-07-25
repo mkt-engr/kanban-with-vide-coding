@@ -1,38 +1,38 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
-import { DataErrorBoundary } from './DataErrorBoundary'
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, it, vi } from "vitest"
+import { DataErrorBoundary } from "./DataErrorBoundary"
 
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
   if (shouldThrow) {
-    throw new Error('データ取得エラー')
+    throw new Error("データ取得エラー")
   }
   return <div>データ内容</div>
 }
 
 // window.location のモック
-Object.defineProperty(window, 'location', {
+Object.defineProperty(window, "location", {
   value: {
     reload: vi.fn(),
   },
   writable: true,
 })
 
-describe('DataErrorBoundary', () => {
+describe("DataErrorBoundary", () => {
   // コンソールエラーを抑制
-  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
-  it('エラーが発生しない場合は子コンポーネントを表示する', () => {
+  it("エラーが発生しない場合は子コンポーネントを表示する", () => {
     render(
       <DataErrorBoundary>
         <ThrowError shouldThrow={false} />
       </DataErrorBoundary>
     )
 
-    expect(screen.getByText('データ内容')).toBeInTheDocument()
+    expect(screen.getByText("データ内容")).toBeInTheDocument()
   })
 
-  it('エラーが発生した場合はデータ用のフォールバックUIを表示する', () => {
+  it("エラーが発生した場合はデータ用のフォールバックUIを表示する", () => {
     render(
       <DataErrorBoundary>
         <ThrowError shouldThrow={true} />
@@ -40,15 +40,15 @@ describe('DataErrorBoundary', () => {
     )
 
     expect(
-      screen.getByText('データの読み込みに失敗しました')
+      screen.getByText("データの読み込みに失敗しました")
     ).toBeInTheDocument()
-    expect(screen.getByText('データ取得エラー')).toBeInTheDocument()
+    expect(screen.getByText("データ取得エラー")).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: '再読み込み' })
+      screen.getByRole("button", { name: "再読み込み" })
     ).toBeInTheDocument()
   })
 
-  it('onRetryが提供された場合再読み込みボタンで実行される', async () => {
+  it("onRetryが提供された場合再読み込みボタンで実行される", async () => {
     const user = userEvent.setup()
     const mockOnRetry = vi.fn()
 
@@ -58,15 +58,15 @@ describe('DataErrorBoundary', () => {
       </DataErrorBoundary>
     )
 
-    const retryButton = screen.getByRole('button', { name: '再読み込み' })
+    const retryButton = screen.getByRole("button", { name: "再読み込み" })
     await user.click(retryButton)
 
     expect(mockOnRetry).toHaveBeenCalledOnce()
   })
 
-  it('onRetryが提供されない場合はwindow.location.reloadが実行される', async () => {
+  it("onRetryが提供されない場合はwindow.location.reloadが実行される", async () => {
     const user = userEvent.setup()
-    const reloadSpy = vi.spyOn(window.location, 'reload')
+    const reloadSpy = vi.spyOn(window.location, "reload")
 
     render(
       <DataErrorBoundary>
@@ -74,15 +74,15 @@ describe('DataErrorBoundary', () => {
       </DataErrorBoundary>
     )
 
-    const retryButton = screen.getByRole('button', { name: '再読み込み' })
+    const retryButton = screen.getByRole("button", { name: "再読み込み" })
     await user.click(retryButton)
 
     expect(reloadSpy).toHaveBeenCalledOnce()
   })
 
-  it('エラーメッセージがない場合はデフォルトメッセージを表示する', () => {
+  it("エラーメッセージがない場合はデフォルトメッセージを表示する", () => {
     const ThrowErrorWithoutMessage = () => {
-      throw new Error('')
+      throw new Error("")
     }
 
     render(
@@ -92,7 +92,7 @@ describe('DataErrorBoundary', () => {
     )
 
     expect(
-      screen.getByText('データの取得中にエラーが発生しました')
+      screen.getByText("データの取得中にエラーが発生しました")
     ).toBeInTheDocument()
   })
 

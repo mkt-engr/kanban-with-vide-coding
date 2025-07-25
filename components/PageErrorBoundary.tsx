@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { ReactNode } from 'react'
-import { ErrorBoundary } from './ErrorBoundary'
+import { ReactNode } from "react"
+import { ErrorBoundary } from "./ErrorBoundary"
 
 type Props = {
   children: ReactNode
@@ -15,7 +15,7 @@ export const PageErrorBoundary = ({ children }: Props) => {
       </h2>
       <p className="text-red-600 text-center mb-6 max-w-md">
         {error.message ||
-          '予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。'}
+          "予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。"}
       </p>
       <div className="flex gap-3">
         <button
@@ -25,7 +25,7 @@ export const PageErrorBoundary = ({ children }: Props) => {
           ページを再読み込み
         </button>
         <button
-          onClick={() => (window.location.href = '/')}
+          onClick={() => (window.location.href = "/")}
           className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
         >
           ホームに戻る

@@ -1,5 +1,5 @@
-import { BoardListSection } from '@/components/board/BoardListSection'
-import { CreateBoardDialog } from '@/components/board/CreateBoardDialog'
+import { BoardListSection } from "@/components/board/BoardListSection"
+import { CreateBoardDialog } from "@/components/board/CreateBoardDialog"
 
 export default function Home() {
   return (
