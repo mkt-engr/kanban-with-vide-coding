@@ -11,7 +11,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: {
@@ -92,11 +92,11 @@ const eslintConfig = [
       ],
 
       // コード品質向上
-      "no-var": "error",
-      "prefer-const": "error",
-      "object-shorthand": "error",
-      "prefer-template": "error",
-      "no-useless-concat": "error",
+      "no-var": "error", // var禁止、let/constを使用
+      "prefer-const": "error", // 再代入しない変数はconstを使用
+      "object-shorthand": "error", // オブジェクトの省略記法を強制 {name: name} → {name}
+      "prefer-template": "error", // 文字列結合よりテンプレートリテラルを推奨
+      "no-useless-concat": "error", // 不要な文字列結合を禁止 "a" + "b" → "ab"
 
       // React/Next.js固有
       "react/jsx-pascal-case": "error",
