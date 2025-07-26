@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
 
-async function getBoardWithColumns(boardId: string) {
+const getBoardWithColumns = async (boardId: string) => {
   const board = await prisma.board.findUnique({
     where: { id: boardId },
     include: {
@@ -21,7 +21,7 @@ async function getBoardWithColumns(boardId: string) {
   });
 
   return board;
-}
+};
 
 export default async function BoardPage({
   params,
