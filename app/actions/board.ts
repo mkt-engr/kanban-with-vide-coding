@@ -19,12 +19,10 @@ const createTaskSchema = z.object({
 });
 
 export async function createBoard(formData: FormData) {
-  const rawData = {
+  const parseResult = createBoardSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-  };
-
-  const parseResult = createBoardSchema.safeParse(rawData);
+  });
   if (!parseResult.success) {
     throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
   }
@@ -54,15 +52,13 @@ export async function createBoard(formData: FormData) {
 }
 
 export async function createTask(formData: FormData) {
-  const rawData = {
+  const parseResult = createTaskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
     priority: formData.get("priority"),
     dueDate: formData.get("dueDate"),
     columnId: formData.get("columnId"),
-  };
-
-  const parseResult = createTaskSchema.safeParse(rawData);
+  });
   if (!parseResult.success) {
     throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
   }
