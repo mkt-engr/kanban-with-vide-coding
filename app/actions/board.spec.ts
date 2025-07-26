@@ -1,14 +1,20 @@
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { createBoard } from "./board";
+import { createBoard, createTask } from "./board";
 
 // Mocks are automatically set up in setup.ts
 const mockPrisma = prisma as typeof prisma & {
   board: { create: ReturnType<typeof vi.fn> };
   column: { createMany: ReturnType<typeof vi.fn> };
+  task: { 
+    create: ReturnType<typeof vi.fn>;
+    findFirst: ReturnType<typeof vi.fn>;
+  };
 };
 const mockRedirect = vi.mocked(redirect);
+const mockRevalidatePath = vi.mocked(revalidatePath);
 
 describe("createBoard Server Action", () => {
   beforeEach(() => {
@@ -120,5 +126,159 @@ describe("createBoard Server Action", () => {
         description: null,
       },
     });
+  });
+});
+
+describe("createTask Server Action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("タスクが正常に作成されること", async () => {
+    const mockTask = { 
+      id: "task-123", 
+      title: "テストタスク",
+      position: 0,
+      column: { boardId: "board-123" }
+    };
+    mockPrisma.task.findFirst.mockResolvedValue(null);
+    mockPrisma.task.create.mockResolvedValue(mockTask);
+
+    const formData = new FormData();
+    formData.append("title", "テストタスク");
+    formData.append("description", "テストの説明");
+    formData.append("priority", "HIGH");
+    formData.append("dueDate", "2023-12-31");
+    formData.append("columnId", "column-123");
+
+    await createTask(formData);
+
+    expect(mockPrisma.task.findFirst).toHaveBeenCalledWith({
+      where: { columnId: "column-123" },
+      orderBy: { position: "desc" },
+      select: { position: true },
+    });
+
+    expect(mockPrisma.task.create).toHaveBeenCalledWith({
+      data: {
+        title: "テストタスク",
+        description: "テストの説明",
+        priority: "HIGH",
+        dueDate: new Date("2023-12-31"),
+        columnId: "column-123",
+        position: 0,
+      },
+      include: {
+        column: {
+          select: {
+            boardId: true,
+          },
+        },
+      },
+    });
+
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/boards/board-123");
+  });
+
+  it("既存タスクがある場合、正しいポジションでタスクが作成されること", async () => {
+    const existingTask = { position: 2 };
+    const mockTask = { column: { boardId: "board-123" } };
+    mockPrisma.task.findFirst.mockResolvedValue(existingTask);
+    mockPrisma.task.create.mockResolvedValue(mockTask);
+
+    const formData = new FormData();
+    formData.append("title", "新しいタスク");
+    formData.append("priority", "MEDIUM");
+    formData.append("columnId", "column-123");
+
+    await createTask(formData);
+
+    expect(mockPrisma.task.create).toHaveBeenCalledWith({
+      data: {
+        title: "新しいタスク",
+        description: null,
+        priority: "MEDIUM",
+        dueDate: null,
+        columnId: "column-123",
+        position: 3,
+      },
+      include: {
+        column: {
+          select: {
+            boardId: true,
+          },
+        },
+      },
+    });
+  });
+
+  it("必須フィールドのみでタスクが作成されること", async () => {
+    const mockTask = { column: { boardId: "board-123" } };
+    mockPrisma.task.findFirst.mockResolvedValue(null);
+    mockPrisma.task.create.mockResolvedValue(mockTask);
+
+    const formData = new FormData();
+    formData.append("title", "最小限のタスク");
+    formData.append("priority", "MEDIUM");
+    formData.append("columnId", "column-123");
+
+    await createTask(formData);
+
+    expect(mockPrisma.task.create).toHaveBeenCalledWith({
+      data: {
+        title: "最小限のタスク",
+        description: null,
+        priority: "MEDIUM",
+        dueDate: null,
+        columnId: "column-123",
+        position: 0,
+      },
+      include: {
+        column: {
+          select: {
+            boardId: true,
+          },
+        },
+      },
+    });
+  });
+
+  it("無効なタイトルの場合エラーが発生すること", async () => {
+    const formData = new FormData();
+    formData.append("title", "");
+    formData.append("columnId", "column-123");
+
+    await expect(createTask(formData)).rejects.toThrow();
+  });
+
+  it("無効なcolumnIdの場合エラーが発生すること", async () => {
+    const formData = new FormData();
+    formData.append("title", "テストタスク");
+    formData.append("columnId", "");
+
+    await expect(createTask(formData)).rejects.toThrow();
+  });
+
+  it("位置取得時のデータベースエラーを処理できること", async () => {
+    mockPrisma.task.findFirst.mockRejectedValue(new Error("Database error"));
+
+    const formData = new FormData();
+    formData.append("title", "テストタスク");
+    formData.append("priority", "MEDIUM");
+    formData.append("columnId", "column-123");
+
+    await expect(createTask(formData)).rejects.toThrow("Database error");
+  });
+
+  it("タスク作成時のデータベースエラーを処理できること", async () => {
+    mockPrisma.task.findFirst.mockResolvedValue(null);
+    mockPrisma.task.create.mockRejectedValue(new Error("Task creation failed"));
+
+    const formData = new FormData();
+    formData.append("title", "テストタスク");
+    formData.append("priority", "MEDIUM");
+    formData.append("columnId", "column-123");
+
+    await expect(createTask(formData)).rejects.toThrow("Task creation failed");
   });
 });

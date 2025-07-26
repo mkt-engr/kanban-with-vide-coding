@@ -36,6 +36,11 @@ vi.mock("next/navigation", () => ({
   })),
 }));
 
+// Mock Next.js cache
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+}));
+
 // Mock Prisma
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -55,6 +60,7 @@ vi.mock("@/lib/prisma", () => ({
     },
     task: {
       create: vi.fn(),
+      findFirst: vi.fn(),
       findMany: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),

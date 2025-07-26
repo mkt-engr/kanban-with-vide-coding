@@ -30,7 +30,8 @@
       "Bash(pnpm build:*)",
       "Bash(find:*)",
       "Bash(pnpm build:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(pnpm add:*)"
     ],
     "deny": [
       "Bash(rm -rf *)"
