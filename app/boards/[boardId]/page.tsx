@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
+import { PriorityBadge } from "@/components/ui/PriorityBadge";
 
 async function getBoardWithColumns(boardId: string) {
   const board = await prisma.board.findUnique({
@@ -85,12 +86,12 @@ export default async function BoardPage({
                       {task.description}
                     </p>
                   )}
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="capitalize">
-                      {task.priority.toLowerCase()}
-                    </span>
+                  <div className="flex items-center justify-between text-xs">
+                    <PriorityBadge priority={task.priority} />
                     {task.dueDate && (
-                      <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                      <span className="text-muted-foreground">
+                        {new Date(task.dueDate).toLocaleDateString()}
+                      </span>
                     )}
                   </div>
                 </div>

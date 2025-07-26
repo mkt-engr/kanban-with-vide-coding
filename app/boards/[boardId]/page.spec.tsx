@@ -109,18 +109,18 @@ describe("BoardPage", () => {
     // Tasks in To Do column
     expect(screen.getByText("タスク1")).toBeInTheDocument();
     expect(screen.getByText("タスク1の説明")).toBeInTheDocument();
-    expect(screen.getByText("high")).toBeInTheDocument();
+    expect(screen.getByText("高")).toBeInTheDocument();
     expect(
       screen.getByText(new Date("2024-12-31").toLocaleDateString())
     ).toBeInTheDocument();
 
     expect(screen.getByText("タスク2")).toBeInTheDocument();
-    expect(screen.getByText("medium")).toBeInTheDocument();
+    expect(screen.getByText("中")).toBeInTheDocument();
 
     // Task in Done column
     expect(screen.getByText("完了タスク")).toBeInTheDocument();
     expect(screen.getByText("完了したタスク")).toBeInTheDocument();
-    expect(screen.getByText("low")).toBeInTheDocument();
+    expect(screen.getByText("低")).toBeInTheDocument();
     expect(
       screen.getByText(new Date("2024-01-01").toLocaleDateString())
     ).toBeInTheDocument();
@@ -213,7 +213,7 @@ describe("BoardPage", () => {
     render(component);
 
     expect(screen.getByText("Minimal Task")).toBeInTheDocument();
-    expect(screen.getByText("urgent")).toBeInTheDocument();
+    expect(screen.getByText("緊急")).toBeInTheDocument();
     // Description and due date should not be rendered
     expect(screen.queryByText("null")).not.toBeInTheDocument();
   });
