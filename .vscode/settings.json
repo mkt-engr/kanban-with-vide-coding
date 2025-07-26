@@ -3,24 +3,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    "source.removeUnusedImports": "explicit"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.formatOnSave": false
+    "source.removeUnusedImports": "explicit",
+    "source.organizeImports": true
   }
 }

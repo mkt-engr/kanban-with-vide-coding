@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
 import { createTask } from "@/app/actions/board";
 import { FormErrorBoundary } from "@/components/FormErrorBoundary";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +17,8 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Textarea } from "@/components/ui/Textarea";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
   columnId: string;

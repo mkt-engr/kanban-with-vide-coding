@@ -1,6 +1,6 @@
-import { Suspense } from "react";
 import { getBoards } from "@/app/actions/board";
 import { DataErrorBoundary } from "@/components/DataErrorBoundary";
+import { Suspense } from "react";
 import { BoardList } from "./BoardList";
 import { BoardListLoading } from "./BoardListLoading";
 

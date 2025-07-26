@@ -1,9 +1,9 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 
 const createBoardSchema = z.object({
   title: z.string().min(1, "タイトルは必須です"),
@@ -18,7 +18,7 @@ const createTaskSchema = z.object({
   columnId: z.string().min(1, "カラムIDは必須です"),
 });
 
-export async function createBoard(formData: FormData) {
+export const createBoard = async (formData: FormData) => {
   const parseResult = createBoardSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -49,9 +49,9 @@ export async function createBoard(formData: FormData) {
   });
 
   redirect(`/boards/${board.id}`);
-}
+};
 
-export async function createTask(formData: FormData) {
+export const createTask = async (formData: FormData) => {
   const parseResult = createTaskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -91,9 +91,9 @@ export async function createTask(formData: FormData) {
   });
 
   revalidatePath(`/boards/${task.column.boardId}`);
-}
+};
 
-export async function getBoards() {
+export const getBoards = async () => {
   const boards = await prisma.board.findMany({
     orderBy: {
       createdAt: "desc",
@@ -107,4 +107,4 @@ export async function getBoards() {
   });
 
   return boards;
-}
+};

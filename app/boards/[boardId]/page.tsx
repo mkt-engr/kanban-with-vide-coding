@@ -1,11 +1,11 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-import { prisma } from "@/lib/prisma";
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
+import { prisma } from "@/lib/prisma";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-async function getBoardWithColumns(boardId: string) {
+const getBoardWithColumns = async (boardId: string) => {
   const board = await prisma.board.findUnique({
     where: { id: boardId },
     include: {
@@ -21,7 +21,7 @@ async function getBoardWithColumns(boardId: string) {
   });
 
   return board;
-}
+};
 
 export default async function BoardPage({
   params,
@@ -97,7 +97,7 @@ export default async function BoardPage({
                 </div>
               ))}
             </div>
-            
+
             <AddTaskDialog columnId={column.id} />
           </div>
         ))}

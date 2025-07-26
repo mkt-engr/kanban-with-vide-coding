@@ -1,5 +1,9 @@
+import {
+  type Priority,
+  getPriorityColor,
+  getPriorityLabel,
+} from "@/lib/priority";
 import { cn } from "@/lib/utils";
-import { type Priority, getPriorityLabel, getPriorityColor } from "@/lib/priority";
 
 type Props = {
   priority: Priority;

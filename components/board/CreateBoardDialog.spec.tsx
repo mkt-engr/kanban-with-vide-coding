@@ -1,7 +1,7 @@
+import { createBoard } from "@/app/actions/board";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBoard } from "@/app/actions/board";
 import { CreateBoardDialog } from "./CreateBoardDialog";
 
 // サーバーアクションのモック

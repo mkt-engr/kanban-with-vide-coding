@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
+import { render, screen } from "@testing-library/react";
+import { notFound } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import BoardPage from "./page";
 
 const mockPrisma = prisma as typeof prisma & {
