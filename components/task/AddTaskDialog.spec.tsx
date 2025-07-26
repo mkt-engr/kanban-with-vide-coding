@@ -20,14 +20,14 @@ describe("AddTaskDialog", () => {
     vi.restoreAllMocks();
   });
 
-  test("ダイアログトリガーボタンが表示される", () => {
+  it("ダイアログトリガーボタンが表示される", () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
     expect(triggerButton).toBeInTheDocument();
   });
 
-  test("ボタンクリックでダイアログが開く", async () => {
+  it("ボタンクリックでダイアログが開く", async () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
@@ -40,7 +40,7 @@ describe("AddTaskDialog", () => {
     expect(screen.getByLabelText("期限")).toBeInTheDocument();
   });
 
-  test("必須フィールドが入力されていない場合は送信されない", async () => {
+  it("必須フィールドが入力されていない場合は送信されない", async () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
@@ -52,7 +52,7 @@ describe("AddTaskDialog", () => {
     expect(createTask).not.toHaveBeenCalled();
   });
 
-  test("フォームに入力できること", async () => {
+  it("フォームに入力できること", async () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
@@ -63,10 +63,13 @@ describe("AddTaskDialog", () => {
     const prioritySelect = screen.getByLabelText("優先度");
     const dueDateInput = screen.getByLabelText("期限");
     
-    await userEvent.type(titleInput, "テストタスク");
-    await userEvent.type(descriptionInput, "テスト説明");
+    await userEvent.click(titleInput);
+    await userEvent.paste("テストタスク");
+    await userEvent.click(descriptionInput);
+    await userEvent.paste("テスト説明");
     await userEvent.selectOptions(prioritySelect, "HIGH");
-    await userEvent.type(dueDateInput, "2023-12-31");
+    await userEvent.click(dueDateInput);
+    await userEvent.paste("2023-12-31");
     
     expect(titleInput).toHaveValue("テストタスク");
     expect(descriptionInput).toHaveValue("テスト説明");
@@ -74,7 +77,7 @@ describe("AddTaskDialog", () => {
     expect(dueDateInput).toHaveValue("2023-12-31");
   });
 
-  test("キャンセルボタンでダイアログが閉じる", async () => {
+  it("キャンセルボタンでダイアログが閉じる", async () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
@@ -88,7 +91,7 @@ describe("AddTaskDialog", () => {
     expect(screen.queryByText("新しいタスクを作成")).not.toBeInTheDocument();
   });
 
-  test("優先度のデフォルト値が「中」である", async () => {
+  it("優先度のデフォルト値が「中」である", async () => {
     render(<AddTaskDialog columnId="test-column-id" />);
     
     const triggerButton = screen.getByRole("button", { name: "タスクを追加" });
