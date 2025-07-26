@@ -109,9 +109,7 @@ npx prisma studio
 - コンポーネントのテスト書くが、カスタムフックのテストを書く必要はない。
 - カスタムフックのテストをしたい場合はコンポーネントのテストで書くこと。
 - GitHubActionsでテストのCIを実行して。
-- 文字を入力するときはuserEvent.typeではなくuserEvent.clickとuserEvent.pasteを使うことこと。
--`userEvent.setup();`の利用は禁止
--`console.log`や`console.error`を利用したテストは禁止
+- 文字を入力するときはuserEvent.typeではなくuserEvent.clickとuserEvent.pasteを使うことこと。-`userEvent.setup();`の利用は禁止 -`console.log`や`console.error`を利用したテストは禁止
 - 利用したモックは必ず解除すること
 - testは使わない。itを使う。
 

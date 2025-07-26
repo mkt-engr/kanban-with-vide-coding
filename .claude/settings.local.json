@@ -33,8 +33,6 @@
       "Bash(git branch:*)",
       "Bash(pnpm add:*)"
     ],
-    "deny": [
-      "Bash(rm -rf *)"
-    ]
+    "deny": ["Bash(rm -rf *)"]
   }
 }

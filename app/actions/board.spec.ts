@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBoard, createTask } from "./board";
 
 // Mocks are automatically set up in setup.ts
 const mockPrisma = prisma as typeof prisma & {
   board: { create: ReturnType<typeof vi.fn> };
   column: { createMany: ReturnType<typeof vi.fn> };
-  task: { 
+  task: {
     create: ReturnType<typeof vi.fn>;
     findFirst: ReturnType<typeof vi.fn>;
   };
@@ -135,11 +135,11 @@ describe("createTask Server Action", () => {
   });
 
   it("タスクが正常に作成されること", async () => {
-    const mockTask = { 
-      id: "task-123", 
+    const mockTask = {
+      id: "task-123",
       title: "テストタスク",
       position: 0,
-      column: { boardId: "board-123" }
+      column: { boardId: "board-123" },
     };
     mockPrisma.task.findFirst.mockResolvedValue(null);
     mockPrisma.task.create.mockResolvedValue(mockTask);

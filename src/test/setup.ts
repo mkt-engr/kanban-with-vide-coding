@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, vi } from "vitest";
 import "@testing-library/jest-dom";
+import { afterAll, beforeAll, vi } from "vitest";
 
 // Suppress console warnings in tests
 const originalError = console.error;

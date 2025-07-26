@@ -1,7 +1,7 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/Button";
+import { useFormStatus } from "react-dom";
 
 type Props = {
   onClick: () => void;

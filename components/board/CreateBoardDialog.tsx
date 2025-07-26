@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
 import { createBoard } from "@/app/actions/board";
 import { FormErrorBoundary } from "@/components/FormErrorBoundary";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { SubmitButton } from "../ui/SubmitButton";

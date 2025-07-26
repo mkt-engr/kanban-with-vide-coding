@@ -1,7 +1,7 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import unusedImports from "eslint-plugin-unused-imports";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,7 +59,8 @@ const eslintConfig = [
           format: ["camelCase", "PascalCase", "UPPER_CASE"],
           leadingUnderscore: "allow",
           filter: {
-            regex: "^(text-|bg-|border-|font-|px-|py-|m-|p-|w-|h-|flex-|grid-|rounded-|shadow-|hover:|focus:|active:|group-hover:|sm:|md:|lg:|xl:|2xl:)",
+            regex:
+              "^(text-|bg-|border-|font-|px-|py-|m-|p-|w-|h-|flex-|grid-|rounded-|shadow-|hover:|focus:|active:|group-hover:|sm:|md:|lg:|xl:|2xl:)",
             match: false,
           },
         },
@@ -67,7 +68,8 @@ const eslintConfig = [
           selector: "property",
           format: null,
           filter: {
-            regex: "^(text-|bg-|border-|font-|px-|py-|m-|p-|w-|h-|flex-|grid-|rounded-|shadow-|hover:|focus:|active:|group-hover:|sm:|md:|lg:|xl:|2xl:)",
+            regex:
+              "^(text-|bg-|border-|font-|px-|py-|m-|p-|w-|h-|flex-|grid-|rounded-|shadow-|hover:|focus:|active:|group-hover:|sm:|md:|lg:|xl:|2xl:)",
             match: true,
           },
         },
