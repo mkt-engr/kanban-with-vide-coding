@@ -20,11 +20,15 @@ const createTaskSchema = z.object({
 
 export async function createBoard(formData: FormData) {
   const rawData = {
-    title: formData.get("title") as string,
-    description: formData.get("description") as string | null,
+    title: formData.get("title"),
+    description: formData.get("description"),
   };
 
-  const validatedData = createBoardSchema.parse(rawData);
+  const parseResult = createBoardSchema.safeParse(rawData);
+  if (!parseResult.success) {
+    throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
+  }
+  const validatedData = parseResult.data;
 
   const board = await prisma.board.create({
     data: {
@@ -51,14 +55,18 @@ export async function createBoard(formData: FormData) {
 
 export async function createTask(formData: FormData) {
   const rawData = {
-    title: formData.get("title") as string,
-    description: formData.get("description") as string | null,
-    priority: formData.get("priority") as string,
-    dueDate: formData.get("dueDate") as string | null,
-    columnId: formData.get("columnId") as string,
+    title: formData.get("title"),
+    description: formData.get("description"),
+    priority: formData.get("priority"),
+    dueDate: formData.get("dueDate"),
+    columnId: formData.get("columnId"),
   };
 
-  const validatedData = createTaskSchema.parse(rawData);
+  const parseResult = createTaskSchema.safeParse(rawData);
+  if (!parseResult.success) {
+    throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
+  }
+  const validatedData = parseResult.data;
 
   const maxPosition = await prisma.task.findFirst({
     where: { columnId: validatedData.columnId },
