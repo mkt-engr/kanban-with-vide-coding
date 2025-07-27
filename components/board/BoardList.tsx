@@ -1,15 +1,13 @@
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
+import { type Board } from "@/models/board";
 
-type Board = {
-  id: string;
-  title: string;
-  description: string | null;
+type BoardWithCreatedAt = Board & {
   createdAt: Date;
 };
 
 type Props = {
-  boards: Board[];
+  boards: BoardWithCreatedAt[];
 };
 
 export const BoardList = ({ boards }: Props) => {

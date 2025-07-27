@@ -3,15 +3,7 @@
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  dueDate: Date | null;
-  isCompleted: boolean;
-};
+import { type Task } from "@/models/task";
 
 type DraggableTaskProps = {
   task: Task;
