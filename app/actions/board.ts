@@ -4,18 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { boardSchema } from "@/models/board";
+import { taskSchema } from "@/models/task";
+import { prioritySchema } from "@/models/priority";
 
-const createBoardSchema = z.object({
-  title: z.string().min(1, "タイトルは必須です"),
-  description: z.string().nullable().optional(),
-});
+const createBoardSchema = boardSchema.pick({ title: true, description: true });
 
-const createTaskSchema = z.object({
-  title: z.string().min(1, "タイトルは必須です"),
-  description: z.string().nullable().optional(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
+const createTaskSchema = taskSchema.pick({ title: true, description: true, priority: true, dueDate: true }).extend({
+  columnId: z.string().uuid(),
   dueDate: z.string().nullable().optional(),
-  columnId: z.string().min(1, "カラムIDは必須です"),
+  priority: prioritySchema.default("MEDIUM"),
 });
 
 export const createBoard = async (formData: FormData) => {
@@ -94,9 +92,9 @@ export const createTask = async (formData: FormData) => {
 };
 
 const moveTaskSchema = z.object({
-  taskId: z.string().min(1, "タスクIDは必須です"),
-  destinationColumnId: z.string().min(1, "移動先カラムIDは必須です"),
-  newPosition: z.number().min(0, "位置は0以上である必要があります"),
+  taskId: z.string().uuid(),
+  destinationColumnId: z.string().uuid(),
+  newPosition: z.number().int(),
 });
 
 export const moveTask = async (formData: FormData) => {
