@@ -1,20 +1,25 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { boardSchema } from "@/models/board";
+import { prioritySchema } from "@/models/priority";
+import { taskSchema } from "@/models/task";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { boardSchema } from "@/models/board";
-import { taskSchema } from "@/models/task";
-import { prioritySchema } from "@/models/priority";
 
-const createBoardSchema = boardSchema.pick({ title: true, description: true });
-
-const createTaskSchema = taskSchema.pick({ title: true, description: true, priority: true, dueDate: true }).extend({
-  columnId: z.string().uuid(),
-  dueDate: z.string().nullable().optional(),
-  priority: prioritySchema.default("MEDIUM"),
+const createBoardSchema = z.object({
+  title: boardSchema.shape.title,
+  description: boardSchema.shape.description,
 });
+
+const createTaskSchema = taskSchema
+  .pick({ title: true, description: true, priority: true, dueDate: true })
+  .extend({
+    columnId: z.string().uuid(),
+    dueDate: z.string().nullable().optional(),
+    priority: prioritySchema.default("MEDIUM"),
+  });
 
 export const createBoard = async (formData: FormData) => {
   const parseResult = createBoardSchema.safeParse({
