@@ -8,7 +8,7 @@ export const taskSchema = z.object({
   priority: prioritySchema,
   dueDate: z.date().nullable(),
   isCompleted: z.boolean(),
-  position: z.number(),
+  position: z.number().int().nonnegative(),
 });
 
 export type Task = z.infer<typeof taskSchema>;
