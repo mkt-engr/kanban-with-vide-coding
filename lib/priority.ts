@@ -1,4 +1,4 @@
-export type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+import { type Priority } from "@/models/priority";
 
 export const getPriorityLabel = (priority: Priority): string => {
   switch (priority) {

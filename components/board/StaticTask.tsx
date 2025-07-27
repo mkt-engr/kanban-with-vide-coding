@@ -1,15 +1,7 @@
 "use client";
 
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  dueDate: Date | null;
-  isCompleted: boolean;
-};
+import { type Task } from "@/models/task";
 
 type StaticTaskProps = {
   task: Task;

@@ -26,6 +26,7 @@ type BoardPageParams = {
 
 export default async function BoardPage({ params }: BoardPageParams) {
   const { boardId } = await params;
+
   const board = await getBoardWithColumns(boardId);
 
   if (!board) {

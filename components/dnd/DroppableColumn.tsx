@@ -1,28 +1,13 @@
 "use client";
 
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
+import { type Column } from "@/models/column";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { DraggableTask } from "./DraggableTask";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  dueDate: Date | null;
-  isCompleted: boolean;
-};
-
-type Column = {
-  id: string;
-  title: string;
-  color: string;
-  tasks: Task[];
-};
 
 type DroppableColumnProps = {
   column: Column;
