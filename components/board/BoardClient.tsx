@@ -1,7 +1,8 @@
 "use client";
 
-import { DroppableColumn } from "@/components/dnd/DroppableColumn";
 import { moveTask } from "@/app/actions/board";
+import { DraggableTask } from "@/components/dnd/DraggableTask";
+import { DroppableColumn } from "@/components/dnd/DroppableColumn";
 import {
   DndContext,
   DragEndEvent,
@@ -13,8 +14,7 @@ import {
 } from "@dnd-kit/core";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useOptimistic, useState, useTransition, useEffect } from "react";
-import { DraggableTask } from "@/components/dnd/DraggableTask";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { StaticColumn } from "./StaticColumn";
 
 type Task = {
@@ -52,47 +52,55 @@ export const BoardClient = ({ board }: BoardClientProps) => {
   const [isClient, setIsClient] = useState(false);
   const [optimisticBoard, updateOptimisticBoard] = useOptimistic(
     board,
-    (state, action: { type: "moveTask"; taskId: string; destinationColumnId: string; newPosition: number }) => {
+    (
+      state,
+      action: {
+        type: "moveTask";
+        taskId: string;
+        destinationColumnId: string;
+        newPosition: number;
+      }
+    ) => {
       if (action.type === "moveTask") {
         const { taskId, destinationColumnId, newPosition } = action;
-        
+
         let task: Task | null = null;
         let sourceColumnId: string | null = null;
-        
+
         for (const column of state.columns) {
-          const taskIndex = column.tasks.findIndex(t => t.id === taskId);
+          const taskIndex = column.tasks.findIndex((t) => t.id === taskId);
           if (taskIndex !== -1) {
             task = column.tasks[taskIndex];
             sourceColumnId = column.id;
             break;
           }
         }
-        
+
         if (!task || !sourceColumnId) return state;
-        
-        const newColumns = state.columns.map(column => {
+
+        const newColumns = state.columns.map((column) => {
           if (column.id === sourceColumnId) {
             return {
               ...column,
-              tasks: column.tasks.filter(t => t.id !== taskId)
+              tasks: column.tasks.filter((t) => t.id !== taskId),
             };
           }
-          
+
           if (column.id === destinationColumnId) {
             const newTasks = [...column.tasks];
             newTasks.splice(newPosition, 0, { ...task, position: newPosition });
             return {
               ...column,
-              tasks: newTasks.map((t, index) => ({ ...t, position: index }))
+              tasks: newTasks.map((t, index) => ({ ...t, position: index })),
             };
           }
-          
+
           return column;
         });
-        
+
         return { ...state, columns: newColumns };
       }
-      
+
       return state;
     }
   );
@@ -115,7 +123,7 @@ export const BoardClient = ({ board }: BoardClientProps) => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (!over) {
       setActiveId(null);
       return;
@@ -129,7 +137,7 @@ export const BoardClient = ({ board }: BoardClientProps) => {
     let task: Task | null = null;
 
     for (const column of optimisticBoard.columns) {
-      const taskIndex = column.tasks.findIndex(t => t.id === activeId);
+      const taskIndex = column.tasks.findIndex((t) => t.id === activeId);
       if (taskIndex !== -1) {
         task = column.tasks[taskIndex];
         sourceColumn = column;
@@ -142,8 +150,8 @@ export const BoardClient = ({ board }: BoardClientProps) => {
         destinationColumn = column;
         break;
       }
-      
-      const taskIndex = column.tasks.findIndex(t => t.id === overId);
+
+      const taskIndex = column.tasks.findIndex((t) => t.id === overId);
       if (taskIndex !== -1) {
         destinationColumn = column;
         break;
@@ -156,35 +164,59 @@ export const BoardClient = ({ board }: BoardClientProps) => {
     }
 
     let newPosition = 0;
-    
+
     if (sourceColumn.id === destinationColumn.id) {
-      const oldIndex = sourceColumn.tasks.findIndex(t => t.id === activeId);
-      const newIndex = destinationColumn.tasks.findIndex(t => t.id === overId);
-      
-      if (oldIndex !== newIndex && newIndex !== -1) {
-        newPosition = newIndex;
+      // 同一カラム内での移動
+      const oldIndex = sourceColumn.tasks.findIndex((t) => t.id === activeId);
+
+      if (overId === destinationColumn.id) {
+        // カラム自体にドロップ（最後に移動）
+        newPosition = destinationColumn.tasks.length - 1;
       } else {
-        newPosition = destinationColumn.tasks.length;
+        // 他のタスクの上にドロップ
+        const overTaskIndex = destinationColumn.tasks.findIndex(
+          (t) => t.id === overId
+        );
+        if (overTaskIndex !== -1) {
+          // 移動するタスクを除いた配列での位置を計算
+          newPosition =
+            overTaskIndex > oldIndex ? overTaskIndex - 1 : overTaskIndex;
+        } else {
+          newPosition = destinationColumn.tasks.length - 1;
+        }
       }
     } else {
-      const overTaskIndex = destinationColumn.tasks.findIndex(t => t.id === overId);
-      newPosition = overTaskIndex !== -1 ? overTaskIndex : destinationColumn.tasks.length;
+      // 異なるカラム間での移動
+      if (overId === destinationColumn.id) {
+        // カラム自体にドロップ（最後に追加）
+        newPosition = destinationColumn.tasks.length;
+      } else {
+        // 他のタスクの上にドロップ
+        const overTaskIndex = destinationColumn.tasks.findIndex(
+          (t) => t.id === overId
+        );
+        newPosition =
+          overTaskIndex !== -1 ? overTaskIndex : destinationColumn.tasks.length;
+      }
     }
 
-    if (sourceColumn.id !== destinationColumn.id || task.position !== newPosition) {
+    if (
+      sourceColumn.id !== destinationColumn.id ||
+      task.position !== newPosition
+    ) {
       startTransition(async () => {
         updateOptimisticBoard({
           type: "moveTask",
           taskId: activeId,
           destinationColumnId: destinationColumn.id,
-          newPosition
+          newPosition,
         });
 
         const formData = new FormData();
         formData.append("taskId", activeId);
         formData.append("destinationColumnId", destinationColumn.id);
         formData.append("newPosition", newPosition.toString());
-        
+
         try {
           await moveTask(formData);
         } catch (error) {
@@ -196,10 +228,10 @@ export const BoardClient = ({ board }: BoardClientProps) => {
     setActiveId(null);
   };
 
-  const activeTask = activeId 
+  const activeTask = activeId
     ? optimisticBoard.columns
-        .flatMap(column => column.tasks)
-        .find(task => task.id === activeId)
+        .flatMap((column) => column.tasks)
+        .find((task) => task.id === activeId)
     : null;
 
   return (
@@ -233,7 +265,7 @@ export const BoardClient = ({ board }: BoardClientProps) => {
               <DroppableColumn key={column.id} column={column} />
             ))}
           </div>
-          
+
           <DragOverlay>
             {activeTask ? <DraggableTask task={activeTask} /> : null}
           </DragOverlay>
