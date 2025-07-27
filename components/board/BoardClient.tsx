@@ -13,8 +13,9 @@ import {
 } from "@dnd-kit/core";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useOptimistic, useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition, useEffect } from "react";
 import { DraggableTask } from "@/components/dnd/DraggableTask";
+import { StaticColumn } from "./StaticColumn";
 
 type Task = {
   id: string;
@@ -48,6 +49,7 @@ type BoardClientProps = {
 export const BoardClient = ({ board }: BoardClientProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const [isClient, setIsClient] = useState(false);
   const [optimisticBoard, updateOptimisticBoard] = useOptimistic(
     board,
     (state, action: { type: "moveTask"; taskId: string; destinationColumnId: string; newPosition: number }) => {
@@ -94,6 +96,10 @@ export const BoardClient = ({ board }: BoardClientProps) => {
       return state;
     }
   );
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -166,14 +172,14 @@ export const BoardClient = ({ board }: BoardClientProps) => {
     }
 
     if (sourceColumn.id !== destinationColumn.id || task.position !== newPosition) {
-      updateOptimisticBoard({
-        type: "moveTask",
-        taskId: activeId,
-        destinationColumnId: destinationColumn.id,
-        newPosition
-      });
-
       startTransition(async () => {
+        updateOptimisticBoard({
+          type: "moveTask",
+          taskId: activeId,
+          destinationColumnId: destinationColumn.id,
+          newPosition
+        });
+
         const formData = new FormData();
         formData.append("taskId", activeId);
         formData.append("destinationColumnId", destinationColumn.id);
@@ -216,21 +222,29 @@ export const BoardClient = ({ board }: BoardClientProps) => {
         )}
       </div>
 
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
+      {isClient ? (
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {optimisticBoard.columns.map((column) => (
+              <DroppableColumn key={column.id} column={column} />
+            ))}
+          </div>
+          
+          <DragOverlay>
+            {activeTask ? <DraggableTask task={activeTask} /> : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {optimisticBoard.columns.map((column) => (
-            <DroppableColumn key={column.id} column={column} />
+          {board.columns.map((column) => (
+            <StaticColumn key={column.id} column={column} />
           ))}
         </div>
-        
-        <DragOverlay>
-          {activeTask ? <DraggableTask task={activeTask} /> : null}
-        </DragOverlay>
-      </DndContext>
+      )}
     </div>
   );
 };
