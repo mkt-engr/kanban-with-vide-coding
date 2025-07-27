@@ -1,9 +1,12 @@
 "use client";
 
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
-import { DraggableTask } from "./DraggableTask";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { DraggableTask } from "./DraggableTask";
 
 type Task = {
   id: string;

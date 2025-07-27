@@ -1,7 +1,6 @@
+import { BoardClient } from "@/components/board/BoardClient";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { BoardClient } from "@/components/board/BoardClient";
-
 
 const getBoardWithColumns = async (boardId: string) => {
   const board = await prisma.board.findUnique({
