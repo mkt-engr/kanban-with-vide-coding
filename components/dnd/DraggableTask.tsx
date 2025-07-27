@@ -1,17 +1,9 @@
 "use client";
 
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
+import type { Task } from "@/models/task";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  dueDate: Date | null;
-  isCompleted: boolean;
-};
 
 type DraggableTaskProps = {
   task: Task;

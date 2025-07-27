@@ -1,24 +1,8 @@
 "use client";
 
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
+import type { Column } from "@/models/column";
 import { StaticTask } from "./StaticTask";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  dueDate: Date | null;
-  isCompleted: boolean;
-};
-
-type Column = {
-  id: string;
-  title: string;
-  color: string;
-  position: number;
-  tasks: Task[];
-};
 
 type StaticColumnProps = {
   column: Column;
