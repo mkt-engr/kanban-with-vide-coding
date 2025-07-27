@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { generateUUID } from "@/src/test/uuid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,7 +23,7 @@ describe("createBoard Server Action", () => {
   });
 
   it("ボードとデフォルトカラムが正常に作成されること", async () => {
-    const mockBoard = { id: "board-123", title: "テストボード" };
+    const mockBoard = { id: generateUUID(), title: "テストボード" };
     mockPrisma.board.create.mockResolvedValue(mockBoard);
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 });
 
@@ -43,14 +44,24 @@ describe("createBoard Server Action", () => {
     // Default columns creation
     expect(mockPrisma.column.createMany).toHaveBeenCalledWith({
       data: [
-        { title: "To Do", position: 0, color: "#ef4444", boardId: "board-123" },
+        {
+          title: "To Do",
+          position: 0,
+          color: "#ef4444",
+          boardId: generateUUID(),
+        },
         {
           title: "In Progress",
           position: 1,
           color: "#f59e0b",
-          boardId: "board-123",
+          boardId: generateUUID(),
         },
-        { title: "Done", position: 2, color: "#10b981", boardId: "board-123" },
+        {
+          title: "Done",
+          position: 2,
+          color: "#10b981",
+          boardId: generateUUID(),
+        },
       ],
     });
 
