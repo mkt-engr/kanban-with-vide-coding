@@ -1,7 +1,6 @@
 import { BoardClient } from "@/components/board/BoardClient";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { z } from "zod";
 
 const getBoardWithColumns = async (boardId: string) => {
   const board = await prisma.board.findUnique({
@@ -27,13 +26,7 @@ type BoardPageParams = {
 
 export default async function BoardPage({ params }: BoardPageParams) {
   const { boardId } = await params;
-  
-  // boardIdがUUID形式かどうかをバリデーション
-  const boardIdValidation = z.string().uuid().safeParse(boardId);
-  if (!boardIdValidation.success) {
-    notFound();
-  }
-  
+
   const board = await getBoardWithColumns(boardId);
 
   if (!board) {
