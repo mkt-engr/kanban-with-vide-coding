@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { boardSchema } from "@/models/board";
 import { prioritySchema } from "@/models/priority";
 import { taskSchema } from "@/models/task";
+import { generateUUID } from "@/src/test/uuid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -33,6 +34,7 @@ export const createBoard = async (formData: FormData) => {
 
   const board = await prisma.board.create({
     data: {
+      id: generateUUID(),
       title: validatedData.title,
       description: validatedData.description || null,
     },
@@ -46,6 +48,7 @@ export const createBoard = async (formData: FormData) => {
 
   await prisma.column.createMany({
     data: defaultColumns.map((column) => ({
+      id: generateUUID(),
       ...column,
       boardId: board.id,
     })),
@@ -77,6 +80,7 @@ export const createTask = async (formData: FormData) => {
 
   const task = await prisma.task.create({
     data: {
+      id: generateUUID(),
       title: validatedData.title,
       description: validatedData.description || null,
       priority: validatedData.priority,
