@@ -95,7 +95,7 @@ npx prisma studio
 - サーバーアクションでもtry-catchを使わないこと。
 - エラーは握り潰さずthrowしてErrorBoundaryでキャッチすること
 - Loading状態はSuspenseを利用してローディングの画面を表示して
-- `as`を使うのは禁止
+- `as string`や`as number`などのキャストをするのは禁止
 
 ## バリデーション
 
