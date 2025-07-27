@@ -112,7 +112,8 @@ export const moveTask = async (formData: FormData) => {
 
   const { taskId, destinationColumnId, newPosition } = parseResult.data;
 
-  await prisma.$transaction(async (tx) => {
+  try {
+    await prisma.$transaction(async (tx) => {
     const task = await tx.task.findUnique({
       where: { id: taskId },
       select: { columnId: true, position: true, column: { select: { boardId: true } } },
@@ -123,94 +124,125 @@ export const moveTask = async (formData: FormData) => {
     }
 
     const sourceColumnId = task.columnId;
-    const sourcePosition = task.position;
-
-    // 1. 移動するタスクを一時的に制約違反しない位置に移動
-    const tempPosition = -999999;
-    await tx.task.update({
-      where: { id: taskId },
-      data: { position: tempPosition },
-    });
 
     if (sourceColumnId === destinationColumnId) {
       // 同一カラム内での移動
-      if (sourcePosition < newPosition) {
-        // 上から下への移動：間のタスクを上にシフト
-        await tx.task.updateMany({
-          where: {
-            columnId: destinationColumnId,
-            position: {
-              gt: sourcePosition,
-              lte: newPosition,
-            },
-          },
-          data: {
-            position: {
-              decrement: 1,
-            },
-          },
-        });
-      } else if (sourcePosition > newPosition) {
-        // 下から上への移動：間のタスクを下にシフト
-        await tx.task.updateMany({
-          where: {
-            columnId: destinationColumnId,
-            position: {
-              gte: newPosition,
-              lt: sourcePosition,
-            },
-          },
-          data: {
-            position: {
-              increment: 1,
-            },
-          },
+      // カラム内の全タスクを位置順で取得
+      const allTasks = await tx.task.findMany({
+        where: { columnId: destinationColumnId },
+        orderBy: { position: 'asc' },
+        select: { id: true },
+      });
+
+      // 移動するタスクを元の位置から削除
+      const tasksWithoutMovingTask = allTasks.filter(t => t.id !== taskId);
+      
+      // newPositionを配列範囲内に調整
+      const safeNewPosition = Math.min(newPosition, tasksWithoutMovingTask.length);
+      
+      // 新しい位置に移動するタスクを挿入
+      tasksWithoutMovingTask.splice(safeNewPosition, 0, { id: taskId });
+
+      // 全タスクの位置を連番で再採番
+      for (let i = 0; i < tasksWithoutMovingTask.length; i++) {
+        await tx.task.update({
+          where: { id: tasksWithoutMovingTask[i].id },
+          data: { position: i },
         });
       }
     } else {
       // 異なるカラム間での移動
-      // 元のカラムで後続のタスクを前にシフト
-      await tx.task.updateMany({
-        where: {
-          columnId: sourceColumnId,
-          position: {
-            gt: sourcePosition,
-          },
-        },
-        data: {
-          position: {
-            decrement: 1,
-          },
-        },
+      // ステップ1: 移動するタスクを一時的な位置(-1)に移動してユニーク制約を回避
+      await tx.task.update({
+        where: { id: taskId },
+        data: { position: -1 },
       });
 
-      // 移動先カラムで指定位置以降のタスクを後ろにシフト
-      await tx.task.updateMany({
+      // ステップ2: 元のカラムのタスクを再採番
+      const sourceTasks = await tx.task.findMany({
         where: {
-          columnId: destinationColumnId,
-          position: {
-            gte: newPosition,
-          },
+          columnId: sourceColumnId,
+          id: { not: taskId },
         },
+        orderBy: { position: 'asc' },
+        select: { id: true },
+      });
+
+      for (let i = 0; i < sourceTasks.length; i++) {
+        await tx.task.update({
+          where: { id: sourceTasks[i].id },
+          data: { position: i },
+        });
+      }
+
+      // ステップ3: 移動先カラムのタスクを取得
+      const destTasks = await tx.task.findMany({
+        where: { columnId: destinationColumnId },
+        orderBy: { position: 'asc' },
+        select: { id: true },
+      });
+
+      // newPositionを配列範囲内に調整
+      const safeNewPosition = Math.min(newPosition, destTasks.length);
+
+      // ステップ4: 移動先カラムで指定位置以降のタスクの位置を1つずつ後ろにずらす
+      for (let i = destTasks.length - 1; i >= safeNewPosition; i--) {
+        await tx.task.update({
+          where: { id: destTasks[i].id },
+          data: { position: i + 1 },
+        });
+      }
+
+      // ステップ5: 移動するタスクを最終的な位置とカラムに配置
+      await tx.task.update({
+        where: { id: taskId },
         data: {
-          position: {
-            increment: 1,
-          },
+          columnId: destinationColumnId,
+          position: safeNewPosition,
         },
       });
     }
 
-    // 2. 最後に移動するタスクを正しい位置に配置
-    await tx.task.update({
-      where: { id: taskId },
-      data: {
-        columnId: destinationColumnId,
-        position: newPosition,
-      },
-    });
-
     revalidatePath(`/boards/${task.column.boardId}`);
-  });
+    });
+  } catch (error: unknown) {
+    // Prismaのユニーク制約エラーの詳細をログに出力
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      const prismaError = error as { code: string; meta?: { target?: string[]; modelName?: string }; message: string };
+      const target = prismaError.meta?.target;
+      const modelName = prismaError.meta?.modelName;
+      
+      console.error('ユニーク制約エラーが発生しました:');
+      console.error(`- モデル: ${modelName}`);
+      console.error(`- 制約フィールド: ${target?.join(', ')}`);
+      console.error(`- エラーの詳細: ${prismaError.message}`);
+      console.error('- 現在の実行パラメータ:');
+      console.error(`  - taskId: ${taskId}`);
+      console.error(`  - destinationColumnId: ${destinationColumnId}`);
+      console.error(`  - newPosition: ${newPosition}`);
+      
+      // 現在のカラム内のタスク状況もログに出力
+      try {
+        const existingTasks = await prisma.task.findMany({
+          where: { columnId: destinationColumnId },
+          orderBy: { position: 'asc' },
+          select: { id: true, position: true, title: true },
+        });
+        console.error('- 移動先カラムの現在のタスク状況:');
+        existingTasks.forEach((task, index) => {
+          console.error(`  [${index}] id: ${task.id}, position: ${task.position}, title: ${task.title}`);
+        });
+      } catch (logError) {
+        console.error('- タスク状況の取得に失敗:', logError);
+      }
+      
+      throw new Error(`タスクの位置が重複しています。columnId: ${destinationColumnId}, position: ${target?.includes('position') ? newPosition : '不明'}`);
+    }
+    
+    // その他のエラーもログに出力
+    console.error('タスク移動中にエラーが発生しました:', error);
+    throw error;
+  }
 };
 
 export const getBoards = async () => {
