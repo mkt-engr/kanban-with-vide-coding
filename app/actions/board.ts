@@ -125,8 +125,17 @@ export const moveTask = async (formData: FormData) => {
     const sourceColumnId = task.columnId;
     const sourcePosition = task.position;
 
+    // 1. 移動するタスクを一時的に制約違反しない位置に移動
+    const tempPosition = -999999;
+    await tx.task.update({
+      where: { id: taskId },
+      data: { position: tempPosition },
+    });
+
     if (sourceColumnId === destinationColumnId) {
+      // 同一カラム内での移動
       if (sourcePosition < newPosition) {
+        // 上から下への移動：間のタスクを上にシフト
         await tx.task.updateMany({
           where: {
             columnId: destinationColumnId,
@@ -142,6 +151,7 @@ export const moveTask = async (formData: FormData) => {
           },
         });
       } else if (sourcePosition > newPosition) {
+        // 下から上への移動：間のタスクを下にシフト
         await tx.task.updateMany({
           where: {
             columnId: destinationColumnId,
@@ -158,6 +168,8 @@ export const moveTask = async (formData: FormData) => {
         });
       }
     } else {
+      // 異なるカラム間での移動
+      // 元のカラムで後続のタスクを前にシフト
       await tx.task.updateMany({
         where: {
           columnId: sourceColumnId,
@@ -172,6 +184,7 @@ export const moveTask = async (formData: FormData) => {
         },
       });
 
+      // 移動先カラムで指定位置以降のタスクを後ろにシフト
       await tx.task.updateMany({
         where: {
           columnId: destinationColumnId,
@@ -187,6 +200,7 @@ export const moveTask = async (formData: FormData) => {
       });
     }
 
+    // 2. 最後に移動するタスクを正しい位置に配置
     await tx.task.update({
       where: { id: taskId },
       data: {
