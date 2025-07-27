@@ -3,6 +3,9 @@
 import { moveTask } from "@/app/actions/board";
 import { DraggableTask } from "@/components/dnd/DraggableTask";
 import { DroppableColumn } from "@/components/dnd/DroppableColumn";
+import { type Board } from "@/models/board";
+import { type Column } from "@/models/column";
+import { type Task } from "@/models/task";
 import {
   DndContext,
   DragEndEvent,
@@ -16,9 +19,6 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { StaticColumn } from "./StaticColumn";
-import { type Task } from "@/models/task";
-import { type Column } from "@/models/column";
-import { type Board } from "@/models/board";
 
 type BoardClientProps = {
   board: Board;

@@ -1,9 +1,8 @@
 "use client";
 
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
-import { StaticTask } from "./StaticTask";
-import { type Task } from "@/models/task";
 import { type Column } from "@/models/column";
+import { StaticTask } from "./StaticTask";
 
 type StaticColumnProps = {
   column: Column;

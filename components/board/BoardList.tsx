@@ -1,6 +1,6 @@
 import { formatDate } from "@/lib/utils";
-import Link from "next/link";
 import { type Board } from "@/models/board";
+import Link from "next/link";
 
 type BoardWithCreatedAt = Board & {
   createdAt: Date;
