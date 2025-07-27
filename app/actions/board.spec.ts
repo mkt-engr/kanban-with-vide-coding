@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { generateUUID } from "@/src/test/uuid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -110,7 +111,7 @@ describe("createBoard Server Action", () => {
   });
 
   it("説明が提供されない場合にnullでボードが作成されること", async () => {
-    const mockBoard = { id: "board-null", title: "タイトルのみ" };
+    const mockBoard = { id: generateUUID(), title: "タイトルのみ" };
     mockPrisma.board.create.mockResolvedValue(mockBoard);
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 });
 
@@ -135,11 +136,15 @@ describe("createTask Server Action", () => {
   });
 
   it("タスクが正常に作成されること", async () => {
+    const taskId = generateUUID();
+    const boardId = generateUUID();
+    const columnId = generateUUID();
+
     const mockTask = {
-      id: "task-123",
+      id: taskId,
       title: "テストタスク",
       position: 0,
-      column: { boardId: "board-123" },
+      column: { boardId },
     };
     mockPrisma.task.findFirst.mockResolvedValue(null);
     mockPrisma.task.create.mockResolvedValue(mockTask);
@@ -149,12 +154,12 @@ describe("createTask Server Action", () => {
     formData.append("description", "テストの説明");
     formData.append("priority", "HIGH");
     formData.append("dueDate", "2023-12-31");
-    formData.append("columnId", "column-123");
+    formData.append("columnId", columnId);
 
     await createTask(formData);
 
     expect(mockPrisma.task.findFirst).toHaveBeenCalledWith({
-      where: { columnId: "column-123" },
+      where: { columnId },
       orderBy: { position: "desc" },
       select: { position: true },
     });
@@ -165,7 +170,7 @@ describe("createTask Server Action", () => {
         description: "テストの説明",
         priority: "HIGH",
         dueDate: new Date("2023-12-31"),
-        columnId: "column-123",
+        columnId,
         position: 0,
       },
       include: {
@@ -177,19 +182,20 @@ describe("createTask Server Action", () => {
       },
     });
 
-    expect(mockRevalidatePath).toHaveBeenCalledWith("/boards/board-123");
+    expect(mockRevalidatePath).toHaveBeenCalledWith(`/boards/${boardId}`);
   });
 
   it("既存タスクがある場合、正しいポジションでタスクが作成されること", async () => {
     const existingTask = { position: 2 };
-    const mockTask = { column: { boardId: "board-123" } };
+    const mockTask = { column: { boardId: generateUUID() } };
     mockPrisma.task.findFirst.mockResolvedValue(existingTask);
     mockPrisma.task.create.mockResolvedValue(mockTask);
 
     const formData = new FormData();
+    const columnId = generateUUID();
     formData.append("title", "新しいタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", "column-123");
+    formData.append("columnId", columnId);
 
     await createTask(formData);
 
@@ -199,7 +205,7 @@ describe("createTask Server Action", () => {
         description: null,
         priority: "MEDIUM",
         dueDate: null,
-        columnId: "column-123",
+        columnId,
         position: 3,
       },
       include: {
@@ -213,14 +219,15 @@ describe("createTask Server Action", () => {
   });
 
   it("必須フィールドのみでタスクが作成されること", async () => {
-    const mockTask = { column: { boardId: "board-123" } };
+    const mockTask = { column: { boardId: generateUUID() } };
     mockPrisma.task.findFirst.mockResolvedValue(null);
     mockPrisma.task.create.mockResolvedValue(mockTask);
 
     const formData = new FormData();
+    const columnId = generateUUID();
     formData.append("title", "最小限のタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", "column-123");
+    formData.append("columnId", columnId);
 
     await createTask(formData);
 
@@ -230,7 +237,7 @@ describe("createTask Server Action", () => {
         description: null,
         priority: "MEDIUM",
         dueDate: null,
-        columnId: "column-123",
+        columnId,
         position: 0,
       },
       include: {
@@ -265,7 +272,7 @@ describe("createTask Server Action", () => {
     const formData = new FormData();
     formData.append("title", "テストタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", "column-123");
+    formData.append("columnId", generateUUID());
 
     await expect(createTask(formData)).rejects.toThrow("Database error");
   });
@@ -277,7 +284,7 @@ describe("createTask Server Action", () => {
     const formData = new FormData();
     formData.append("title", "テストタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", "column-123");
+    formData.append("columnId", generateUUID());
 
     await expect(createTask(formData)).rejects.toThrow("Task creation failed");
   });
