@@ -3,7 +3,7 @@ import { columnSchema } from "./column";
 
 export const boardSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  title: z.string().min(1),
   description: z.string().nullable(),
   columns: z.array(columnSchema),
 });

@@ -3,7 +3,7 @@ import { prioritySchema } from "./priority";
 
 export const taskSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  title: z.string().min(1),
   description: z.string().nullable(),
   priority: prioritySchema,
   dueDate: z.date().nullable(),
