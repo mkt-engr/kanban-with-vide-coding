@@ -2,7 +2,7 @@ import { formatDate } from "@/lib/utils";
 import { type Board } from "@/models/board";
 import Link from "next/link";
 
-type BoardWithCreatedAt = Board & {
+type BoardWithCreatedAt = Pick<Board, "id" | "title" | "description"> & {
   createdAt: Date;
 };
 
