@@ -50,18 +50,22 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSubmit();
-    } else if (e.key === "Escape") {
+    if (e.key === "Escape") {
       e.preventDefault();
       handleCancel();
     }
+    // EnterキーはformのonSubmitで処理されるため、ここでは処理しない
   };
 
   if (isEditing) {
     return (
-      <div className="min-w-80 p-4 bg-card border border-border rounded-lg shadow-sm">
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="min-w-80 p-4 bg-card border border-border rounded-lg shadow-sm"
+      >
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -91,8 +95,8 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
 
         <div className="flex gap-2">
           <Button
+            type="submit"
             size="sm"
-            onClick={handleSubmit}
             disabled={!title.trim()}
             className="flex items-center gap-1"
           >
@@ -100,6 +104,7 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
             追加
           </Button>
           <Button
+            type="button"
             size="sm"
             variant="outline"
             onClick={handleCancel}
@@ -109,7 +114,7 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
             キャンセル
           </Button>
         </div>
-      </div>
+      </form>
     );
   }
 
