@@ -7,16 +7,13 @@ import { type Board } from "@/models/board";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { AddColumnButton } from "./AddColumnButton";
-import { StaticColumn } from "./StaticColumn";
 
 type BoardClientProps = {
   board: Board;
 };
 
 export const BoardClient = ({ board }: BoardClientProps) => {
-  const [isClient, setIsClient] = useState(false);
   const {
     optimisticBoard,
     sensors,
@@ -24,10 +21,6 @@ export const BoardClient = ({ board }: BoardClientProps) => {
     handleDragEnd,
     activeTask,
   } = useBoardDragDrop({ initialBoard: board });
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -49,39 +42,27 @@ export const BoardClient = ({ board }: BoardClientProps) => {
         )}
       </div>
 
-      {isClient ? (
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="flex gap-6 overflow-x-auto pb-4">
-            {optimisticBoard.columns.map((column) => (
-              <div key={column.id} className="flex-shrink-0 w-80">
-                <DroppableColumn column={column} />
-              </div>
-            ))}
-            <div className="flex-shrink-0">
-              <AddColumnButton boardId={optimisticBoard.id} />
-            </div>
-          </div>
-
-          <DragOverlay>
-            {activeTask ? <DraggableTask task={activeTask} /> : null}
-          </DragOverlay>
-        </DndContext>
-      ) : (
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        id="board-dnd-context"
+      >
         <div className="flex gap-6 overflow-x-auto pb-4">
-          {board.columns.map((column) => (
+          {optimisticBoard.columns.map((column) => (
             <div key={column.id} className="flex-shrink-0 w-80">
-              <StaticColumn column={column} />
+              <DroppableColumn column={column} />
             </div>
           ))}
           <div className="flex-shrink-0">
-            <AddColumnButton boardId={board.id} />
+            <AddColumnButton boardId={optimisticBoard.id} />
           </div>
         </div>
-      )}
+
+        <DragOverlay>
+          {activeTask ? <DraggableTask task={activeTask} /> : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 };
