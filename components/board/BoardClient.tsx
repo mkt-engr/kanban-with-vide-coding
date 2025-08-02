@@ -1,216 +1,26 @@
 "use client";
 
-import { moveTask } from "@/app/actions/board";
 import { DraggableTask } from "@/components/dnd/DraggableTask";
 import { DroppableColumn } from "@/components/dnd/DroppableColumn";
+import { useBoardDragDrop } from "@/components/hooks/useBoardDragDrop";
 import { type Board } from "@/models/board";
-import { type Column } from "@/models/column";
-import { type Task } from "@/models/task";
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useOptimistic, useState, useTransition } from "react";
-import { StaticColumn } from "./StaticColumn";
+import { AddColumnButton } from "./AddColumnButton";
 
 type BoardClientProps = {
   board: Board;
 };
 
 export const BoardClient = ({ board }: BoardClientProps) => {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
-  const [isClient, setIsClient] = useState(false);
-  const [optimisticBoard, updateOptimisticBoard] = useOptimistic(
-    board,
-    (
-      state,
-      action: {
-        type: "moveTask";
-        taskId: string;
-        destinationColumnId: string;
-        newPosition: number;
-      }
-    ) => {
-      if (action.type === "moveTask") {
-        const { taskId, destinationColumnId, newPosition } = action;
-
-        let task: Task | null = null;
-        let sourceColumnId: string | null = null;
-
-        for (const column of state.columns) {
-          const taskIndex = column.tasks.findIndex((t) => t.id === taskId);
-          if (taskIndex !== -1) {
-            task = column.tasks[taskIndex];
-            sourceColumnId = column.id;
-            break;
-          }
-        }
-
-        if (!task || !sourceColumnId) return state;
-
-        const newColumns = state.columns.map((column) => {
-          if (column.id === sourceColumnId) {
-            return {
-              ...column,
-              tasks: column.tasks.filter((t) => t.id !== taskId),
-            };
-          }
-
-          if (column.id === destinationColumnId) {
-            const newTasks = [...column.tasks];
-            newTasks.splice(newPosition, 0, { ...task, position: newPosition });
-            return {
-              ...column,
-              tasks: newTasks.map((t, index) => ({ ...t, position: index })),
-            };
-          }
-
-          return column;
-        });
-
-        return { ...state, columns: newColumns };
-      }
-
-      return state;
-    }
-  );
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id.toString());
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) {
-      setActiveId(null);
-      return;
-    }
-
-    const activeId = active.id.toString();
-    const overId = over.id.toString();
-
-    let sourceColumn: Column | null = null;
-    let destinationColumn: Column | null = null;
-    let task: Task | null = null;
-
-    for (const column of optimisticBoard.columns) {
-      const taskIndex = column.tasks.findIndex((t) => t.id === activeId);
-      if (taskIndex !== -1) {
-        task = column.tasks[taskIndex];
-        sourceColumn = column;
-        break;
-      }
-    }
-
-    for (const column of optimisticBoard.columns) {
-      if (column.id === overId) {
-        destinationColumn = column;
-        break;
-      }
-
-      const taskIndex = column.tasks.findIndex((t) => t.id === overId);
-      if (taskIndex !== -1) {
-        destinationColumn = column;
-        break;
-      }
-    }
-
-    if (!task || !sourceColumn || !destinationColumn) {
-      setActiveId(null);
-      return;
-    }
-
-    let newPosition = 0;
-
-    if (sourceColumn.id === destinationColumn.id) {
-      // 同一カラム内での移動
-      const oldIndex = sourceColumn.tasks.findIndex((t) => t.id === activeId);
-
-      if (overId === destinationColumn.id) {
-        // カラム自体にドロップ（最後に移動）
-        newPosition = destinationColumn.tasks.length - 1;
-      } else {
-        // 他のタスクの上にドロップ
-        const overTaskIndex = destinationColumn.tasks.findIndex(
-          (t) => t.id === overId
-        );
-        if (overTaskIndex !== -1) {
-          // 移動するタスクを除いた配列での位置を計算
-          newPosition =
-            overTaskIndex > oldIndex ? overTaskIndex - 1 : overTaskIndex;
-        } else {
-          newPosition = destinationColumn.tasks.length - 1;
-        }
-      }
-    } else {
-      // 異なるカラム間での移動
-      if (overId === destinationColumn.id) {
-        // カラム自体にドロップ（最後に追加）
-        newPosition = destinationColumn.tasks.length;
-      } else {
-        // 他のタスクの上にドロップ
-        const overTaskIndex = destinationColumn.tasks.findIndex(
-          (t) => t.id === overId
-        );
-        newPosition =
-          overTaskIndex !== -1 ? overTaskIndex : destinationColumn.tasks.length;
-      }
-    }
-
-    if (
-      sourceColumn.id !== destinationColumn.id ||
-      task.position !== newPosition
-    ) {
-      startTransition(async () => {
-        updateOptimisticBoard({
-          type: "moveTask",
-          taskId: activeId,
-          destinationColumnId: destinationColumn.id,
-          newPosition,
-        });
-
-        const formData = new FormData();
-        formData.append("taskId", activeId);
-        formData.append("destinationColumnId", destinationColumn.id);
-        formData.append("newPosition", newPosition.toString());
-
-        try {
-          await moveTask(formData);
-        } catch (error) {
-          console.error("タスクの移動に失敗しました:", error);
-        }
-      });
-    }
-
-    setActiveId(null);
-  };
-
-  const activeTask = activeId
-    ? optimisticBoard.columns
-        .flatMap((column) => column.tasks)
-        .find((task) => task.id === activeId)
-    : null;
+  const {
+    optimisticBoard,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    activeTask,
+  } = useBoardDragDrop({ initialBoard: board });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -232,29 +42,27 @@ export const BoardClient = ({ board }: BoardClientProps) => {
         )}
       </div>
 
-      {isClient ? (
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {optimisticBoard.columns.map((column) => (
-              <DroppableColumn key={column.id} column={column} />
-            ))}
-          </div>
-
-          <DragOverlay>
-            {activeTask ? <DraggableTask task={activeTask} /> : null}
-          </DragOverlay>
-        </DndContext>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {board.columns.map((column) => (
-            <StaticColumn key={column.id} column={column} />
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        id="board-dnd-context"
+      >
+        <div className="flex gap-6 overflow-x-auto pb-4">
+          {optimisticBoard.columns.map((column) => (
+            <div key={column.id} className="flex-shrink-0 w-80">
+              <DroppableColumn column={column} />
+            </div>
           ))}
+          <div className="flex-shrink-0">
+            <AddColumnButton boardId={optimisticBoard.id} />
+          </div>
         </div>
-      )}
+
+        <DragOverlay>
+          {activeTask ? <DraggableTask task={activeTask} /> : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 };

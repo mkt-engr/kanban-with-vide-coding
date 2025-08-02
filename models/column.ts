@@ -2,7 +2,7 @@ import { z } from "zod";
 import { taskSchema } from "./task";
 
 export const columnSchema = z.object({
-  id: z.uuid(),
+  id: z.cuid(),
   title: z.string().min(1),
   color: z.string(),
   position: z.number().int(),
