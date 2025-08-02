@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { isTaskExpired, getExpiredDaysText, formatDueDate, countExpiredTasks } from "./date-utils";
+import { isTaskExpired, getExpiredDaysText, formatDueDate, countExpiredTasks } from "./dateUtils";
 
 describe("date-utils", () => {
   beforeEach(() => {

@@ -3,7 +3,7 @@
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
 import { type Column } from "@/models/column";
 import { useDroppable } from "@dnd-kit/core";
-import { countExpiredTasks } from "@/lib/date-utils";
+import { countExpiredTasks } from "@/lib/dateUtils";
 import {
   SortableContext,
   verticalListSortingStrategy,

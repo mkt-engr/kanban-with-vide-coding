@@ -4,7 +4,7 @@ import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { type Task } from "@/models/task";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { isTaskExpired, getExpiredDaysText, formatDueDate } from "@/lib/date-utils";
+import { isTaskExpired, getExpiredDaysText, formatDueDate } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 
 type DraggableTaskProps = {
