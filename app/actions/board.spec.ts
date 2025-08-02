@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { generateUUID } from "@/src/test/uuid";
+import { generateCUID } from "@/src/test/uuid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -111,7 +111,7 @@ describe("createBoard Server Action", () => {
   });
 
   it("説明が提供されない場合にnullでボードが作成されること", async () => {
-    const mockBoard = { id: generateUUID(), title: "タイトルのみ" };
+    const mockBoard = { id: generateCUID(), title: "タイトルのみ" };
     mockPrisma.board.create.mockResolvedValue(mockBoard);
     mockPrisma.column.createMany.mockResolvedValue({ count: 3 });
 
@@ -136,9 +136,9 @@ describe("createTask Server Action", () => {
   });
 
   it("タスクが正常に作成されること", async () => {
-    const taskId = generateUUID();
-    const boardId = generateUUID();
-    const columnId = generateUUID();
+    const taskId = generateCUID();
+    const boardId = generateCUID();
+    const columnId = generateCUID();
 
     const mockTask = {
       id: taskId,
@@ -187,12 +187,12 @@ describe("createTask Server Action", () => {
 
   it("既存タスクがある場合、正しいポジションでタスクが作成されること", async () => {
     const existingTask = { position: 2 };
-    const mockTask = { column: { boardId: generateUUID() } };
+    const mockTask = { column: { boardId: generateCUID() } };
     mockPrisma.task.findFirst.mockResolvedValue(existingTask);
     mockPrisma.task.create.mockResolvedValue(mockTask);
 
     const formData = new FormData();
-    const columnId = generateUUID();
+    const columnId = generateCUID();
     formData.append("title", "新しいタスク");
     formData.append("priority", "MEDIUM");
     formData.append("columnId", columnId);
@@ -219,12 +219,12 @@ describe("createTask Server Action", () => {
   });
 
   it("必須フィールドのみでタスクが作成されること", async () => {
-    const mockTask = { column: { boardId: generateUUID() } };
+    const mockTask = { column: { boardId: generateCUID() } };
     mockPrisma.task.findFirst.mockResolvedValue(null);
     mockPrisma.task.create.mockResolvedValue(mockTask);
 
     const formData = new FormData();
-    const columnId = generateUUID();
+    const columnId = generateCUID();
     formData.append("title", "最小限のタスク");
     formData.append("priority", "MEDIUM");
     formData.append("columnId", columnId);
@@ -272,7 +272,7 @@ describe("createTask Server Action", () => {
     const formData = new FormData();
     formData.append("title", "テストタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", generateUUID());
+    formData.append("columnId", generateCUID());
 
     await expect(createTask(formData)).rejects.toThrow("Database error");
   });
@@ -284,7 +284,7 @@ describe("createTask Server Action", () => {
     const formData = new FormData();
     formData.append("title", "テストタスク");
     formData.append("priority", "MEDIUM");
-    formData.append("columnId", generateUUID());
+    formData.append("columnId", generateCUID());
 
     await expect(createTask(formData)).rejects.toThrow("Task creation failed");
   });

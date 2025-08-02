@@ -100,6 +100,7 @@ npx prisma studio
 ## バリデーション
 
 - zodを使ってパースするときはなるべく`safeParse`を使い、`parse`は使わないこと。もし`parse`を使う必要があれば確認を取ること。
+- スキーマでUUID,CUIDを利用した地時は`z.string().uuid()`と`z.string().cuid()`ではなく、それぞれ`z.uuid()`と`z.cuid()`とすること。zodのv4の表記です。
 
 ## テスト
 
@@ -124,4 +125,5 @@ The application expects a `DATABASE_URL` environment variable for PostgreSQL con
 
 ## その他
 
-- commitメッセージやPRの文章は日本語で
+- commitメッセージやPRの文章は日本語にすること
+- Claude Codeのレスポンスもできる限り日本語にすること

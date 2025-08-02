@@ -2,8 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { boardSchema } from "@/models/board";
+import { columnSchema } from "@/models/column";
 import { prioritySchema } from "@/models/priority";
 import { taskSchema } from "@/models/task";
+import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,13 +15,19 @@ const createBoardSchema = z.object({
   description: boardSchema.shape.description,
 });
 
-const createTaskSchema = taskSchema
-  .pick({ title: true, description: true, priority: true, dueDate: true })
-  .extend({
-    columnId: z.string().uuid(),
-    dueDate: z.string().nullable().optional(),
-    priority: prioritySchema.default("MEDIUM"),
-  });
+const createTaskSchema = z.object({
+  title: taskSchema.shape.title,
+  description: taskSchema.shape.description,
+  priority: prioritySchema.default("MEDIUM"),
+  dueDate: z.string().nullable().optional(),
+  columnId: columnSchema.shape.id,
+});
+
+const createColumnSchema = z.object({
+  title: columnSchema.shape.title,
+  color: columnSchema.shape.color,
+  boardId: boardSchema.shape.id,
+});
 
 export const createBoard = async (formData: FormData) => {
   const parseResult = createBoardSchema.safeParse({
@@ -97,8 +105,8 @@ export const createTask = async (formData: FormData) => {
 };
 
 const moveTaskSchema = z.object({
-  taskId: z.string().uuid(),
-  destinationColumnId: z.string().uuid(),
+  taskId: taskSchema.shape.id,
+  destinationColumnId: columnSchema.shape.id,
   newPosition: z.number().int(),
 });
 
@@ -106,7 +114,7 @@ export const moveTask = async (formData: FormData) => {
   const parseResult = moveTaskSchema.safeParse({
     taskId: formData.get("taskId"),
     destinationColumnId: formData.get("destinationColumnId"),
-    newPosition: parseInt(formData.get("newPosition") as string, 10),
+    newPosition: parseInt(formData.get("newPosition")?.toString() ?? "0"),
   });
 
   if (!parseResult.success) {
@@ -115,157 +123,137 @@ export const moveTask = async (formData: FormData) => {
 
   const { taskId, destinationColumnId, newPosition } = parseResult.data;
 
-  try {
-    await prisma.$transaction(async (tx) => {
-      const task = await tx.task.findUnique({
-        where: { id: taskId },
-        select: {
-          columnId: true,
-          position: true,
-          column: { select: { boardId: true } },
-        },
-      });
-
-      if (!task) {
-        throw new Error("タスクが見つかりません");
-      }
-
-      const sourceColumnId = task.columnId;
-
-      if (sourceColumnId === destinationColumnId) {
-        // 同一カラム内での移動
-        // カラム内の全タスクを位置順で取得
-        const allTasks = await tx.task.findMany({
-          where: { columnId: destinationColumnId },
-          orderBy: { position: "asc" },
-          select: { id: true },
-        });
-
-        // 移動するタスクを元の位置から削除
-        const tasksWithoutMovingTask = allTasks.filter((t) => t.id !== taskId);
-
-        // newPositionを配列範囲内に調整
-        const safeNewPosition = Math.min(
-          newPosition,
-          tasksWithoutMovingTask.length
-        );
-
-        // 新しい位置に移動するタスクを挿入
-        tasksWithoutMovingTask.splice(safeNewPosition, 0, { id: taskId });
-
-        // 全タスクの位置を連番で再採番
-        for (let i = 0; i < tasksWithoutMovingTask.length; i++) {
-          await tx.task.update({
-            where: { id: tasksWithoutMovingTask[i].id },
-            data: { position: i },
-          });
-        }
-      } else {
-        // 異なるカラム間での移動
-        // ステップ1: 移動するタスクを一時的な位置(-1)に移動してユニーク制約を回避
-        await tx.task.update({
-          where: { id: taskId },
-          data: { position: -1 },
-        });
-
-        // ステップ2: 元のカラムのタスクを再採番
-        const sourceTasks = await tx.task.findMany({
-          where: {
-            columnId: sourceColumnId,
-            id: { not: taskId },
-          },
-          orderBy: { position: "asc" },
-          select: { id: true },
-        });
-
-        for (let i = 0; i < sourceTasks.length; i++) {
-          await tx.task.update({
-            where: { id: sourceTasks[i].id },
-            data: { position: i },
-          });
-        }
-
-        // ステップ3: 移動先カラムのタスクを取得
-        const destTasks = await tx.task.findMany({
-          where: { columnId: destinationColumnId },
-          orderBy: { position: "asc" },
-          select: { id: true },
-        });
-
-        // newPositionを配列範囲内に調整
-        const safeNewPosition = Math.min(newPosition, destTasks.length);
-
-        // ステップ4: 移動先カラムで指定位置以降のタスクの位置を1つずつ後ろにずらす
-        for (let i = destTasks.length - 1; i >= safeNewPosition; i--) {
-          await tx.task.update({
-            where: { id: destTasks[i].id },
-            data: { position: i + 1 },
-          });
-        }
-
-        // ステップ5: 移動するタスクを最終的な位置とカラムに配置
-        await tx.task.update({
-          where: { id: taskId },
-          data: {
-            columnId: destinationColumnId,
-            position: safeNewPosition,
-          },
-        });
-      }
-
-      revalidatePath(`/boards/${task.column.boardId}`);
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const task = await tx.task.findUnique({
+      where: { id: taskId },
+      select: {
+        columnId: true,
+        position: true,
+        column: { select: { boardId: true } },
+      },
     });
-  } catch (error: unknown) {
-    // Prismaのユニーク制約エラーの詳細をログに出力
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
-      const prismaError = error as {
-        code: string;
-        meta?: { target?: string[]; modelName?: string };
-        message: string;
-      };
-      const target = prismaError.meta?.target;
-      const modelName = prismaError.meta?.modelName;
 
-      console.error("ユニーク制約エラーが発生しました:");
-      console.error(`- モデル: ${modelName}`);
-      console.error(`- 制約フィールド: ${target?.join(", ")}`);
-      console.error(`- エラーの詳細: ${prismaError.message}`);
-      console.error("- 現在の実行パラメータ:");
-      console.error(`  - taskId: ${taskId}`);
-      console.error(`  - destinationColumnId: ${destinationColumnId}`);
-      console.error(`  - newPosition: ${newPosition}`);
-
-      // 現在のカラム内のタスク状況もログに出力
-      try {
-        const existingTasks = await prisma.task.findMany({
-          where: { columnId: destinationColumnId },
-          orderBy: { position: "asc" },
-          select: { id: true, position: true, title: true },
-        });
-        console.error("- 移動先カラムの現在のタスク状況:");
-        existingTasks.forEach((task, index) => {
-          console.error(
-            `  [${index}] id: ${task.id}, position: ${task.position}, title: ${task.title}`
-          );
-        });
-      } catch (logError) {
-        console.error("- タスク状況の取得に失敗:", logError);
-      }
-
-      throw new Error(
-        `タスクの位置が重複しています。columnId: ${destinationColumnId}, position: ${target?.includes("position") ? newPosition : "不明"}`
-      );
+    if (!task) {
+      throw new Error("タスクが見つかりません");
     }
 
-    // その他のエラーもログに出力
-    console.error("タスク移動中にエラーが発生しました:", error);
-    throw error;
+    const sourceColumnId = task.columnId;
+
+    if (sourceColumnId === destinationColumnId) {
+      // 同一カラム内での移動
+      // カラム内の全タスクを位置順で取得
+      const allTasks = await tx.task.findMany({
+        where: { columnId: destinationColumnId },
+        orderBy: { position: "asc" },
+        select: { id: true },
+      });
+
+      // 移動するタスクを元の位置から削除
+      const tasksWithoutMovingTask = allTasks.filter(
+        (t: { id: string }) => t.id !== taskId
+      );
+
+      // newPositionを配列範囲内に調整
+      const safeNewPosition = Math.min(
+        newPosition,
+        tasksWithoutMovingTask.length
+      );
+
+      // 新しい位置に移動するタスクを挿入
+      tasksWithoutMovingTask.splice(safeNewPosition, 0, { id: taskId });
+
+      // 全タスクの位置を連番で再採番
+      for (let i = 0; i < tasksWithoutMovingTask.length; i++) {
+        await tx.task.update({
+          where: { id: tasksWithoutMovingTask[i].id },
+          data: { position: i },
+        });
+      }
+    } else {
+      // 異なるカラム間での移動
+      // ステップ1: 移動するタスクを一時的な位置(-1)に移動してユニーク制約を回避
+      await tx.task.update({
+        where: { id: taskId },
+        data: { position: -1 },
+      });
+
+      // ステップ2: 元のカラムのタスクを再採番
+      const sourceTasks = await tx.task.findMany({
+        where: {
+          columnId: sourceColumnId,
+          id: { not: taskId },
+        },
+        orderBy: { position: "asc" },
+        select: { id: true },
+      });
+
+      for (let i = 0; i < sourceTasks.length; i++) {
+        await tx.task.update({
+          where: { id: sourceTasks[i].id },
+          data: { position: i },
+        });
+      }
+
+      // ステップ3: 移動先カラムのタスクを取得
+      const destTasks = await tx.task.findMany({
+        where: { columnId: destinationColumnId },
+        orderBy: { position: "asc" },
+        select: { id: true },
+      });
+
+      // newPositionを配列範囲内に調整
+      const safeNewPosition = Math.min(newPosition, destTasks.length);
+
+      // ステップ4: 移動先カラムで指定位置以降のタスクの位置を1つずつ後ろにずらす
+      for (let i = destTasks.length - 1; i >= safeNewPosition; i--) {
+        await tx.task.update({
+          where: { id: destTasks[i].id },
+          data: { position: i + 1 },
+        });
+      }
+
+      // ステップ5: 移動するタスクを最終的な位置とカラムに配置
+      await tx.task.update({
+        where: { id: taskId },
+        data: {
+          columnId: destinationColumnId,
+          position: safeNewPosition,
+        },
+      });
+    }
+
+    revalidatePath(`/boards/${task.column.boardId}`);
+  });
+};
+
+export const createColumn = async (formData: FormData) => {
+  const parseResult = createColumnSchema.safeParse({
+    title: formData.get("title"),
+    color: formData.get("color"),
+    boardId: formData.get("boardId"),
+  });
+  if (!parseResult.success) {
+    throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
   }
+
+  const maxPosition = await prisma.column.findFirst({
+    where: { boardId: parseResult.data.boardId },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+
+  const newPosition = (maxPosition?.position ?? -1) + 1;
+
+  await prisma.column.create({
+    data: {
+      title: parseResult.data.title,
+      color: parseResult.data.color,
+      position: newPosition,
+      boardId: parseResult.data.boardId,
+    },
+  });
+
+  revalidatePath(`/boards/${parseResult.data.boardId}`);
 };
 
 export const getBoards = async () => {
