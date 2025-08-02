@@ -110,7 +110,7 @@ describe("BoardPage", () => {
     expect(screen.getByText("タスク1")).toBeInTheDocument();
     expect(screen.getByText("タスク1の説明")).toBeInTheDocument();
     expect(screen.getByText("高")).toBeInTheDocument();
-    expect(screen.getByText("2024-12-31")).toBeInTheDocument();
+    expect(screen.getByText("2024/12/31")).toBeInTheDocument();
 
     expect(screen.getByText("タスク2")).toBeInTheDocument();
     expect(screen.getByText("中")).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("BoardPage", () => {
     expect(screen.getByText("完了タスク")).toBeInTheDocument();
     expect(screen.getByText("完了したタスク")).toBeInTheDocument();
     expect(screen.getByText("低")).toBeInTheDocument();
-    expect(screen.getByText("2024-01-01")).toBeInTheDocument();
+    expect(screen.getByText("2024/1/1")).toBeInTheDocument();
   });
 
   it("説明のないボードを処理できること", async () => {

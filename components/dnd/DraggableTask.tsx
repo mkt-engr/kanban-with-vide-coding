@@ -4,6 +4,8 @@ import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { type Task } from "@/models/task";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { isTaskExpired, getExpiredDaysText, formatDueDate } from "@/lib/dateUtils";
+import { cn } from "@/lib/utils";
 
 type DraggableTaskProps = {
   task: Task;
@@ -25,6 +27,8 @@ export const DraggableTask = ({ task }: DraggableTaskProps) => {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  
+  const isExpired = task.dueDate ? isTaskExpired(task.dueDate) : false;
 
   return (
     <div
@@ -32,9 +36,11 @@ export const DraggableTask = ({ task }: DraggableTaskProps) => {
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-background border rounded-lg p-3 shadow-sm cursor-grab active:cursor-grabbing ${
-        isDragging ? "opacity-50 shadow-lg border-primary" : ""
-      }`}
+      className={cn(
+        "bg-background border rounded-lg p-3 shadow-sm cursor-grab active:cursor-grabbing",
+        isDragging && "opacity-50 shadow-lg border-primary",
+        isExpired && "border-red-500 border-2"
+      )}
     >
       <h3 className="font-medium mb-1">{task.title}</h3>
       {task.description && (
@@ -43,9 +49,22 @@ export const DraggableTask = ({ task }: DraggableTaskProps) => {
       <div className="flex items-center justify-between text-xs">
         <PriorityBadge priority={task.priority} />
         {task.dueDate && (
-          <span className="text-muted-foreground">
-            {new Date(task.dueDate).toISOString().split("T")[0]}
-          </span>
+          <div className="flex flex-col items-end gap-1">
+            {isExpired && (
+              <div className="flex items-center gap-1">
+                <span>⚠️</span>
+                <span className="text-red-500 font-medium text-xs">
+                  {getExpiredDaysText(task.dueDate)}
+                </span>
+              </div>
+            )}
+            <span className={cn(
+              "text-muted-foreground",
+              isExpired && "text-red-500"
+            )}>
+              {formatDueDate(task.dueDate)}
+            </span>
+          </div>
         )}
       </div>
     </div>
