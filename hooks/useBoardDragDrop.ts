@@ -145,7 +145,9 @@ export const useBoardDragDrop = ({
 
     if (sourceColumn.id === destinationColumn.id) {
       // 同一カラム内での移動
-      const oldIndex = sourceColumn.tasks.findIndex((t) => t.id === activeTaskId);
+      const oldIndex = sourceColumn.tasks.findIndex(
+        (t) => t.id === activeTaskId
+      );
 
       if (overId === destinationColumn.id) {
         // カラム自体にドロップ（最後に移動）
@@ -207,9 +209,9 @@ export const useBoardDragDrop = ({
   };
 
   const activeTask = activeId
-    ? optimisticBoard.columns
+    ? (optimisticBoard.columns
         .flatMap((column) => column.tasks)
-        .find((task) => task.id === activeId) ?? null
+        .find((task) => task.id === activeId) ?? null)
     : null;
 
   return {

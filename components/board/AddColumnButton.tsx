@@ -3,10 +3,10 @@
 import { createColumn } from "@/app/actions/board";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Plus, Check, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
-type AddColumnButtonProps = {
+type Props = {
   boardId: string;
 };
 
@@ -21,7 +21,7 @@ const COLOR_OPTIONS = [
   "#059669", // green
 ];
 
-export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
+export const AddColumnButton = ({ boardId }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0]);
@@ -59,7 +59,7 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
 
   if (isEditing) {
     return (
-      <form 
+      <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
@@ -74,7 +74,7 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
           className="mb-3"
           autoFocus
         />
-        
+
         <div className="mb-4">
           <p className="text-sm text-muted-foreground mb-2">カラー選択</p>
           <div className="flex gap-2 flex-wrap">
@@ -84,7 +84,9 @@ export const AddColumnButton = ({ boardId }: AddColumnButtonProps) => {
                 type="button"
                 onClick={() => setSelectedColor(color)}
                 className={`w-6 h-6 rounded-full border-2 ${
-                  selectedColor === color ? "border-foreground" : "border-border"
+                  selectedColor === color
+                    ? "border-foreground"
+                    : "border-border"
                 }`}
                 style={{ backgroundColor: color }}
                 aria-label={`色を選択: ${color}`}
