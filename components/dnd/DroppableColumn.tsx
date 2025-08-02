@@ -3,6 +3,7 @@
 import { AddTaskDialog } from "@/components/task/AddTaskDialog";
 import { type Column } from "@/models/column";
 import { useDroppable } from "@dnd-kit/core";
+import { countExpiredTasks } from "@/lib/date-utils";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -19,6 +20,7 @@ export const DroppableColumn = ({ column }: DroppableColumnProps) => {
   });
 
   const taskIds = column.tasks.map((task) => task.id);
+  const expiredCount = countExpiredTasks(column.tasks);
 
   return (
     <div
@@ -33,9 +35,16 @@ export const DroppableColumn = ({ column }: DroppableColumnProps) => {
           style={{ backgroundColor: column.color }}
         />
         <h2 className="font-semibold text-card-foreground">{column.title}</h2>
-        <span className="text-sm text-muted-foreground">
-          ({column.tasks.length})
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            ({column.tasks.length})
+          </span>
+          {expiredCount > 0 && (
+            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+              期限切れ {expiredCount}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3 min-h-[200px]">
