@@ -49,13 +49,20 @@ export const DraggableTask = ({ task }: DraggableTaskProps) => {
       <div className="flex items-center justify-between text-xs">
         <PriorityBadge priority={task.priority} />
         {task.dueDate && (
-          <div className="flex items-center gap-1">
-            {isExpired && <span>⚠️</span>}
+          <div className="flex flex-col items-end gap-1">
+            {isExpired && (
+              <div className="flex items-center gap-1">
+                <span>⚠️</span>
+                <span className="text-red-500 font-medium text-xs">
+                  {getExpiredDaysText(task.dueDate)}
+                </span>
+              </div>
+            )}
             <span className={cn(
               "text-muted-foreground",
-              isExpired && "text-red-500 font-medium"
+              isExpired && "text-red-500"
             )}>
-              {isExpired ? getExpiredDaysText(task.dueDate) : formatDueDate(task.dueDate)}
+              {formatDueDate(task.dueDate)}
             </span>
           </div>
         )}
