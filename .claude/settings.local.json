@@ -34,8 +34,11 @@
       "Bash(pnpm add:*)",
       "Bash(npx prettier:*)",
       "Bash(pnpm format:*)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(cp:*)"
     ],
-    "deny": ["Bash(rm -rf *)"]
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
   }
 }

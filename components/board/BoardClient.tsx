@@ -2,7 +2,7 @@
 
 import { DraggableTask } from "@/components/dnd/DraggableTask";
 import { DroppableColumn } from "@/components/dnd/DroppableColumn";
-import { useBoardDragDrop } from "@/hooks/useBoardDragDrop";
+import { useBoardDragDrop } from "@/components/hooks/useBoardDragDrop";
 import { type Board } from "@/models/board";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { ChevronLeft } from "lucide-react";

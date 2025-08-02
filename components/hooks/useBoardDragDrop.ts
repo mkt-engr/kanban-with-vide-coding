@@ -11,11 +11,11 @@ import {
 } from "@dnd-kit/core";
 import { useOptimistic, useState, useTransition } from "react";
 
-type UseBoardDragDropProps = {
+type Props = {
   initialBoard: Board;
 };
 
-type UseBoardDragDropReturn = {
+type ReturnValue = {
   optimisticBoard: Board;
   activeId: string | null;
   sensors: ReturnType<typeof useSensors>;
@@ -24,9 +24,7 @@ type UseBoardDragDropReturn = {
   activeTask: Task | null;
 };
 
-export const useBoardDragDrop = ({
-  initialBoard,
-}: UseBoardDragDropProps): UseBoardDragDropReturn => {
+export const useBoardDragDrop = ({ initialBoard }: Props): ReturnValue => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
