@@ -2,7 +2,7 @@ import { z } from "zod";
 import { prioritySchema } from "./priority";
 
 export const taskSchema = z.object({
-  id: z.uuid(),
+  id: z.cuid(),
   title: z.string().min(1),
   description: z.string().nullable(),
   priority: prioritySchema,

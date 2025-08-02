@@ -2,8 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { boardSchema } from "@/models/board";
+import { columnSchema } from "@/models/column";
 import { prioritySchema } from "@/models/priority";
 import { taskSchema } from "@/models/task";
+import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,13 +15,19 @@ const createBoardSchema = z.object({
   description: boardSchema.shape.description,
 });
 
-const createTaskSchema = taskSchema
-  .pick({ title: true, description: true, priority: true, dueDate: true })
-  .extend({
-    columnId: z.string().uuid(),
-    dueDate: z.string().nullable().optional(),
-    priority: prioritySchema.default("MEDIUM"),
-  });
+const createTaskSchema = z.object({
+  title: taskSchema.shape.title,
+  description: taskSchema.shape.description,
+  priority: prioritySchema.default("MEDIUM"),
+  dueDate: z.string().nullable().optional(),
+  columnId: columnSchema.shape.id,
+});
+
+const createColumnSchema = z.object({
+  title: columnSchema.shape.title,
+  color: columnSchema.shape.color,
+  boardId: boardSchema.shape.id,
+});
 
 export const createBoard = async (formData: FormData) => {
   const parseResult = createBoardSchema.safeParse({
@@ -97,8 +105,8 @@ export const createTask = async (formData: FormData) => {
 };
 
 const moveTaskSchema = z.object({
-  taskId: z.string().uuid(),
-  destinationColumnId: z.string().uuid(),
+  taskId: taskSchema.shape.id,
+  destinationColumnId: columnSchema.shape.id,
   newPosition: z.number().int(),
 });
 
@@ -116,7 +124,7 @@ export const moveTask = async (formData: FormData) => {
   const { taskId, destinationColumnId, newPosition } = parseResult.data;
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const task = await tx.task.findUnique({
         where: { id: taskId },
         select: {
@@ -142,7 +150,9 @@ export const moveTask = async (formData: FormData) => {
         });
 
         // 移動するタスクを元の位置から削除
-        const tasksWithoutMovingTask = allTasks.filter((t) => t.id !== taskId);
+        const tasksWithoutMovingTask = allTasks.filter(
+          (t: { id: string }) => t.id !== taskId
+        );
 
         // newPositionを配列範囲内に調整
         const safeNewPosition = Math.min(
@@ -248,11 +258,16 @@ export const moveTask = async (formData: FormData) => {
           select: { id: true, position: true, title: true },
         });
         console.error("- 移動先カラムの現在のタスク状況:");
-        existingTasks.forEach((task, index) => {
-          console.error(
-            `  [${index}] id: ${task.id}, position: ${task.position}, title: ${task.title}`
-          );
-        });
+        existingTasks.forEach(
+          (
+            task: { id: string; position: number; title: string },
+            index: number
+          ) => {
+            console.error(
+              `  [${index}] id: ${task.id}, position: ${task.position}, title: ${task.title}`
+            );
+          }
+        );
       } catch (logError) {
         console.error("- タスク状況の取得に失敗:", logError);
       }
@@ -266,6 +281,37 @@ export const moveTask = async (formData: FormData) => {
     console.error("タスク移動中にエラーが発生しました:", error);
     throw error;
   }
+};
+
+export const createColumn = async (formData: FormData) => {
+  const parseResult = createColumnSchema.safeParse({
+    title: formData.get("title"),
+    color: formData.get("color"),
+    boardId: formData.get("boardId"),
+  });
+  if (!parseResult.success) {
+    throw new Error(`バリデーションエラー: ${parseResult.error.message}`);
+  }
+  const validatedData = parseResult.data;
+
+  const maxPosition = await prisma.column.findFirst({
+    where: { boardId: validatedData.boardId },
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+
+  const newPosition = (maxPosition?.position ?? -1) + 1;
+
+  await prisma.column.create({
+    data: {
+      title: validatedData.title,
+      color: validatedData.color,
+      position: newPosition,
+      boardId: validatedData.boardId,
+    },
+  });
+
+  revalidatePath(`/boards/${validatedData.boardId}`);
 };
 
 export const getBoards = async () => {
